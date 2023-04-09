@@ -8,7 +8,7 @@ plugins {
 }
 
 group = 'hexlet.code'
-version = '0.0.1-SNAPSHOT'
+version = '1.0-SNAPSHOT'
 sourceCompatibility = '17'
 
 repositories {
@@ -24,6 +24,9 @@ dependencies {
 application {
 	mainClass = 'hexlet.code.TaskManagerApplication'
 }
+
+task stage(dependsOn: ['clean', 'installDist'])
+installDist.mustRunAfter clean
 
 tasks.named('test') {
 	useJUnitPlatform()
