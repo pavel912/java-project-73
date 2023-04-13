@@ -37,6 +37,11 @@ dependencies {
 	runtimeOnly group: 'org.postgresql', name: 'postgresql', version: '42.5.4'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	implementation 'com.github.database-rider:rider-core:1.36.0'
+	testImplementation 'com.github.database-rider:rider-junit5:1.36.0'
+
+	implementation 'commons-validator:commons-validator:1.7'
 }
 
 application {
@@ -68,8 +73,8 @@ liquibase {
 		main {
 			changeLogFile 'src/main/resources/db/changelog/changelog-master.xml'
 			url 'jdbc:h2:./taskManagerDb'
-			username 'sa'
-			password ''
+			username 'admin'
+			password 'admin'
 			referenceUrl 'hibernate:spring:hexlet.code.domain' +
 					'?dialect=org.hibernate.dialect.H2Dialect' +
 					'&hibernate.physical_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy'

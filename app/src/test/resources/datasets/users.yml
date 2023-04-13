@@ -1,0 +1,11 @@
+users:
+  - id: 1
+    first_name: John
+    last_name: Smith
+    email: jsmith@mail.ru
+    password: jsmith
+  - id: 2
+    first_name: Jack
+    last_name: Doe
+    email: killer@mail.ru
+    password: qwerty
