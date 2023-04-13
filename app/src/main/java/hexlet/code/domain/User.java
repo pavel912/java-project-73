@@ -8,7 +8,7 @@ import javax.persistence.Table;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.data.annotation.CreatedDate;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
 
@@ -29,6 +29,6 @@ public class User {
 
     private String password;
 
-    @CreatedDate
+    @CreationTimestamp
     private Instant createdAt;
 }
