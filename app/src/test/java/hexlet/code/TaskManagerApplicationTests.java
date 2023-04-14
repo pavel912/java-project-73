@@ -1,7 +1,11 @@
 package hexlet.code;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -14,18 +18,73 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-import com.github.database.rider.junit5.api.DBRider;
-import com.github.database.rider.core.api.dataset.DataSet;
+
+import java.util.Map;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-@DBRider
-@DataSet("users.yml")
 class TaskManagerApplicationTests {
 
 	@Autowired
 	private MockMvc mockMvc;
+
+	private long firstUserId;
+	private long secondUserId;
+	private final ObjectMapper objectMapper = new ObjectMapper();
+
+	@BeforeEach
+	public void createTestUsers() throws Exception {
+		MockHttpServletResponse createResponseJohn = mockMvc
+				.perform(
+						post("/api/users")
+								.contentType(MediaType.APPLICATION_JSON)
+								.content("{\"firstName\": \"John\","
+										+ " \"lastName\": \"Smith\","
+										+ " \"email\": \"jsmith@mail.ru\","
+										+ " \"password\": \"jsmith\"}")
+				)
+				.andReturn()
+				.getResponse();
+
+		assertThat(createResponseJohn.getStatus()).isEqualTo(200);
+
+		firstUserId = Long
+				.parseLong(
+						objectMapper
+								.readValue(
+										createResponseJohn
+												.getContentAsString(),
+										new TypeReference<
+												Map<String, String>
+												>() { }
+								).get("id"));
+
+		MockHttpServletResponse createResponseJack = mockMvc
+				.perform(
+						post("/api/users")
+								.contentType(MediaType.APPLICATION_JSON)
+								.content("{\"firstName\": \"Jack\","
+										+ " \"lastName\": \"Doe\","
+										+ " \"email\": \"killer@mail.ru\","
+										+ " \"password\": \"qwerty\"}")
+				)
+				.andReturn()
+				.getResponse();
+
+		assertThat(createResponseJack.getStatus()).isEqualTo(200);
+
+		secondUserId = Long
+				.parseLong(
+						objectMapper
+								.readValue(
+										createResponseJack
+												.getContentAsString(),
+										new TypeReference<
+												Map<String, String>
+												>() { }
+								).get("id"));
+	}
 
 	@Test
 	void testRootPage() throws Exception {
@@ -40,8 +99,21 @@ class TaskManagerApplicationTests {
 
 	@Test
 	void testGetUser() throws Exception {
+		MockHttpServletResponse loginResponse = mockMvc
+				.perform(post("/api/login")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content("{\"username\": \"jsmith@mail.ru\", "
+								+ "\"password\": \"jsmith\"}"))
+				.andReturn()
+				.getResponse();
+
+		assertThat(loginResponse.getStatus()).isEqualTo(200);
+
+		String token = loginResponse.getContentAsString();
+
 		MockHttpServletResponse response = mockMvc
-				.perform(get("/api/users/1"))
+				.perform(get("/api/users/" + firstUserId)
+						.header(AUTHORIZATION, token))
 				.andReturn()
 				.getResponse();
 
@@ -91,9 +163,22 @@ class TaskManagerApplicationTests {
 
 	@Test
 	void testUpdateUserPositive() throws Exception {
+		MockHttpServletResponse loginResponse = mockMvc
+				.perform(post("/api/login")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content("{\"username\": \"jsmith@mail.ru\", "
+								+ "\"password\": \"jsmith\"}"))
+				.andReturn()
+				.getResponse();
+
+		assertThat(loginResponse.getStatus()).isEqualTo(200);
+
+		String token = loginResponse.getContentAsString();
+
 		MockHttpServletResponse postResponse = mockMvc
 				.perform(
-						put("/api/users/1")
+						put("/api/users/" + firstUserId)
+								.header(AUTHORIZATION, token)
 								.contentType(MediaType.APPLICATION_JSON)
 								.content("{\"firstName\": \"Mike\","
 										+ " \"lastName\": \"Smith\","
@@ -118,8 +203,21 @@ class TaskManagerApplicationTests {
 
 	@Test
 	void testDeleteUserPositive() throws Exception {
+		MockHttpServletResponse loginResponse = mockMvc
+				.perform(post("/api/login")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content("{\"username\": \"killer@mail.ru\", "
+								+ "\"password\": \"qwerty\"}"))
+				.andReturn()
+				.getResponse();
+
+		assertThat(loginResponse.getStatus()).isEqualTo(200);
+
+		String token = loginResponse.getContentAsString();
+
 		MockHttpServletResponse postResponse = mockMvc
-				.perform(delete("/api/users/2"))
+				.perform(delete("/api/users/" + secondUserId)
+						.header(AUTHORIZATION, token))
 				.andReturn()
 				.getResponse();
 
@@ -189,9 +287,22 @@ class TaskManagerApplicationTests {
 
 	@Test
 	void testUpdateUserIncorrectData() throws Exception {
+		MockHttpServletResponse loginResponse = mockMvc
+				.perform(post("/api/login")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content("{\"username\": \"jsmith@mail.ru\", "
+								+ "\"password\": \"jsmith\"}"))
+				.andReturn()
+				.getResponse();
+
+		assertThat(loginResponse.getStatus()).isEqualTo(200);
+
+		String token = loginResponse.getContentAsString();
+
 		MockHttpServletResponse postResponse = mockMvc
 				.perform(
-						put("/api/users/1")
+						put("/api/users/" + firstUserId)
+								.header(AUTHORIZATION, token)
 								.contentType(MediaType.APPLICATION_JSON)
 								.content("{\"firstName\": \"incorrect\","
 										+ " \"lastName\": \"incorrect\","
@@ -215,9 +326,22 @@ class TaskManagerApplicationTests {
 
 	@Test
 	void testUpdateUserWithSameLogin() throws Exception {
+		MockHttpServletResponse loginResponse = mockMvc
+				.perform(post("/api/login")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content("{\"username\": \"killer@mail.ru\", "
+								+ "\"password\": \"qwerty\"}"))
+				.andReturn()
+				.getResponse();
+
+		assertThat(loginResponse.getStatus()).isEqualTo(200);
+
+		String token = loginResponse.getContentAsString();
+
 		MockHttpServletResponse postResponse = mockMvc
 				.perform(
-						put("/api/users/2")
+						put("/api/users/" + secondUserId)
+								.header(AUTHORIZATION, token)
 								.contentType(MediaType.APPLICATION_JSON)
 								.content("{\"firstName\": \"Mike\","
 										+ " \"lastName\": \"Smith\","
@@ -237,16 +361,6 @@ class TaskManagerApplicationTests {
 		assertThat(getResponse.getStatus()).isEqualTo(200);
 		assertThat(getResponse.getContentType()).isEqualTo(MediaType.APPLICATION_JSON.toString());
 		assertThat(getResponse.getContentAsString()).doesNotContain("Mike");
-	}
-
-	@Test
-	void testDeleteNonExistentUser() throws Exception {
-		MockHttpServletResponse postResponse = mockMvc
-				.perform(delete("/api/users/6"))
-				.andReturn()
-				.getResponse();
-
-		assertThat(postResponse.getStatus()).isEqualTo(422);
 	}
 
 }

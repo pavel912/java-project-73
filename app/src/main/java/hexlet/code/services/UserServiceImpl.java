@@ -2,17 +2,29 @@ package hexlet.code.services;
 
 import hexlet.code.domain.User;
 import hexlet.code.dto.UserDTO;
+import hexlet.code.exceptions.UserNotFoundException;
 import hexlet.code.repository.UserRepository;
+import lombok.AllArgsConstructor;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Service
 @Transactional
-public class UserServiceImpl implements UserService {
+@AllArgsConstructor
+public class UserServiceImpl implements UserService, UserDetailsService {
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private final PasswordEncoder passwordEncoder;
 
     private static final Exception USER_DOES_NOT_EXIST = new Exception("User with this ID does not exist");
 
@@ -68,7 +80,7 @@ public class UserServiceImpl implements UserService {
         user.setFirstName(userDto.getFirstName());
         user.setLastName(userDto.getLastName());
         user.setEmail(userDto.getEmail());
-        user.setPassword(userDto.getPassword());
+        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
 
         return user;
 
@@ -96,5 +108,22 @@ public class UserServiceImpl implements UserService {
         }
 
         return false;
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("user"));
+
+        User user = userRepository.findByEmail(username);
+
+        if (user == null) {
+            throw new UserNotFoundException("User with such username does not exist");
+        }
+
+        return new org.springframework.security.core.userdetails.User(
+                user.getEmail(),
+                user.getPassword(),
+                authorities
+        );
     }
 }
