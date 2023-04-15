@@ -20,7 +20,6 @@ import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 import static org.springframework.http.HttpMethod.GET;
@@ -80,32 +79,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 jwtHelper
         );
 
-        http = http.csrf().disable();
-
-        http = http
-                .exceptionHandling()
-                .authenticationEntryPoint(
-                        (request, response, authException) -> {
-                            response.sendError(
-                                    HttpServletResponse.SC_UNAUTHORIZED,
-                                    authException.getMessage()
-                            );
-                        }
-                )
-                .and();
-
-        http.authorizeRequests()
-                .antMatchers("/api/users").permitAll()
-                .antMatchers("/api/login").permitAll()
-                .antMatchers("/welcome").permitAll()
-                .anyRequest().authenticated();
-
-        http
+        http.csrf().disable()
+                .authorizeRequests()
+                .requestMatchers(publicUrls).permitAll()
+                .anyRequest().authenticated()
+                .and()
                 .addFilter(authenticationFilter)
-                .addFilterBefore(
-                authorizationFilter,
-                UsernamePasswordAuthenticationFilter.class
-        );
+                .addFilterBefore(authorizationFilter, UsernamePasswordAuthenticationFilter.class)
+                .sessionManagement().disable()
+                .formLogin().disable()
+                .httpBasic().disable()
+                .logout().disable();
 
     }
 }
