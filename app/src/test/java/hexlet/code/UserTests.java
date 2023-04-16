@@ -325,6 +325,36 @@ class UserTests {
 	}
 
 	@Test
+	void testUpdateOtherUser() throws Exception {
+		MockHttpServletResponse loginResponse = mockMvc
+				.perform(post("/api/login")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content("{\"username\": \"jsmith@mail.ru\", "
+								+ "\"password\": \"jsmith\"}"))
+				.andReturn()
+				.getResponse();
+
+		assertThat(loginResponse.getStatus()).isEqualTo(200);
+
+		String token = loginResponse.getContentAsString();
+
+		MockHttpServletResponse postResponse = mockMvc
+				.perform(
+						put("/api/users/" + secondUserId)
+								.header(AUTHORIZATION, token)
+								.contentType(MediaType.APPLICATION_JSON)
+								.content("{\"firstName\": \"ok\","
+										+ " \"lastName\": \"ok\","
+										+ " \"email\": \"ok@mail.ru\","
+										+ " \"password\": \"1234\"}")
+				)
+				.andReturn()
+				.getResponse();
+
+		assertThat(postResponse.getStatus()).isEqualTo(403);
+	}
+
+	@Test
 	void testUpdateUserWithSameLogin() throws Exception {
 		MockHttpServletResponse loginResponse = mockMvc
 				.perform(post("/api/login")
@@ -361,6 +391,29 @@ class UserTests {
 		assertThat(getResponse.getStatus()).isEqualTo(200);
 		assertThat(getResponse.getContentType()).isEqualTo(MediaType.APPLICATION_JSON.toString());
 		assertThat(getResponse.getContentAsString()).doesNotContain("Mike");
+	}
+
+	@Test
+	void testDeleteOtherUser() throws Exception {
+		MockHttpServletResponse loginResponse = mockMvc
+				.perform(post("/api/login")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content("{\"username\": \"killer@mail.ru\", "
+								+ "\"password\": \"qwerty\"}"))
+				.andReturn()
+				.getResponse();
+
+		assertThat(loginResponse.getStatus()).isEqualTo(200);
+
+		String token = loginResponse.getContentAsString();
+
+		MockHttpServletResponse postResponse = mockMvc
+				.perform(delete("/api/users/" + firstUserId)
+						.header(AUTHORIZATION, token))
+				.andReturn()
+				.getResponse();
+
+		assertThat(postResponse.getStatus()).isEqualTo(403);
 	}
 
 	@Test

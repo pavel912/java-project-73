@@ -7,14 +7,14 @@ import hexlet.code.exceptions.EntityNotFoundException;
 import hexlet.code.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
-import java.util.List;
+
+import static hexlet.code.configs.WebSecurityConfig.DEFAULT_AUTHORITIES;
 
 @Service
 @Transactional
@@ -83,18 +83,16 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("user"));
-
         User user = userRepository.findByEmail(username);
 
         if (user == null) {
-            throw new EntityNotFoundException("User with such username does not exist");
+            throw new EntityNotFoundException("User with username " + username + " does not exist");
         }
 
         return new org.springframework.security.core.userdetails.User(
                 user.getEmail(),
                 user.getPassword(),
-                authorities
+                DEFAULT_AUTHORITIES
         );
     }
 }

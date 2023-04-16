@@ -6,6 +6,7 @@ import hexlet.code.repository.UserRepository;
 import hexlet.code.services.UserService;
 import liquibase.repackaged.org.apache.commons.collections4.IterableUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +28,10 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    private static final String ONLY_OWNER_BY_ID = """
+            @userRepository.findById(#id).getEmail() == authentication.getName()
+            """;
 
     @GetMapping(path = "/{id}")
     public UserDto getUser(@PathVariable long id) {
@@ -53,6 +58,7 @@ public class UserController {
     }
 
     @PutMapping(path = "/{id}")
+    @PreAuthorize(ONLY_OWNER_BY_ID)
     public UserDto updateUser(@PathVariable long id, @RequestBody @Valid final UserDto userDto) throws Exception {
             userDto.setId(id);
             User user = userService.updateUser(userDto);
@@ -60,6 +66,7 @@ public class UserController {
     }
 
     @DeleteMapping(path = "/{id}")
+    @PreAuthorize(ONLY_OWNER_BY_ID)
     public void deleteUser(@PathVariable long id) {
         User user = userRepository.findById(id);
 
