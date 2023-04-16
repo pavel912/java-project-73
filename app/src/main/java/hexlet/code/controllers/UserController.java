@@ -1,12 +1,11 @@
 package hexlet.code.controllers;
 import hexlet.code.domain.User;
-import hexlet.code.dto.UserDTO;
+import hexlet.code.dto.UserDto;
+import hexlet.code.exceptions.EntityNotFoundException;
 import hexlet.code.repository.UserRepository;
 import hexlet.code.services.UserService;
 import liquibase.repackaged.org.apache.commons.collections4.IterableUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.List;
 
 
@@ -28,62 +28,50 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    ResponseEntity<UserDTO> badRequestResponse = new ResponseEntity<UserDTO>(HttpStatus.UNPROCESSABLE_ENTITY);
-
     @GetMapping(path = "/{id}")
-    public ResponseEntity<?> getUser(@PathVariable long id) {
+    public UserDto getUser(@PathVariable long id) {
         User user = userRepository.findById(id);
 
         if (user == null) {
-            return formResponse("User with this ID does not exist", HttpStatus.UNPROCESSABLE_ENTITY);
+            throw new EntityNotFoundException("User with id" + id + "not found");
         }
 
-        return formResponse(userToUserDto(user), HttpStatus.OK);
+        return userToUserDto(user);
     }
 
     @GetMapping(path = "")
-    public List<UserDTO> getUsers() {
+    public List<UserDto> getUsers() {
         List<User> users = IterableUtils.toList(userRepository.findAll());
 
         return users.stream().map(this::userToUserDto).toList();
     }
 
     @PostMapping(path = "")
-    public ResponseEntity<?> createUser(@RequestBody UserDTO userDto) {
-        try {
+    public UserDto createUser(@RequestBody @Valid final UserDto userDto) throws Exception {
             User user = userService.createUser(userDto);
-            return formResponse(userToUserDto(user), HttpStatus.OK);
-        } catch (Exception e) {
-            return formResponse(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
-        }
+            return userToUserDto(user);
     }
 
     @PutMapping(path = "/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable long id, @RequestBody UserDTO userDto) {
-        try {
+    public UserDto updateUser(@PathVariable long id, @RequestBody @Valid final UserDto userDto) throws Exception {
             userDto.setId(id);
             User user = userService.updateUser(userDto);
-            return formResponse(userToUserDto(user), HttpStatus.OK);
-        } catch (Exception e) {
-            return formResponse(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
-        }
+            return userToUserDto(user);
     }
 
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable long id) {
+    public void deleteUser(@PathVariable long id) {
         User user = userRepository.findById(id);
 
         if (user == null) {
-            return formResponse("User with this ID does not exist", HttpStatus.UNPROCESSABLE_ENTITY);
+            throw new EntityNotFoundException("User with id" + id + "not found");
         }
 
         userRepository.delete(user);
-
-        return formResponse(userToUserDto(user), HttpStatus.OK);
     }
 
-    private UserDTO userToUserDto(User user) {
-        UserDTO userDto = new UserDTO();
+    private UserDto userToUserDto(User user) {
+        UserDto userDto = new UserDto();
 
         userDto.setId(user.getId());
         userDto.setFirstName(user.getFirstName());
@@ -93,9 +81,5 @@ public class UserController {
 
         return userDto;
 
-    }
-
-    private ResponseEntity<?> formResponse(Object returnObject, HttpStatus status) {
-        return new ResponseEntity<>(returnObject, status);
     }
 }

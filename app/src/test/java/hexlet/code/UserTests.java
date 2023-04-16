@@ -24,7 +24,7 @@ import java.util.Map;
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-class TaskManagerApplicationTests {
+class UserTests {
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -361,6 +361,27 @@ class TaskManagerApplicationTests {
 		assertThat(getResponse.getStatus()).isEqualTo(200);
 		assertThat(getResponse.getContentType()).isEqualTo(MediaType.APPLICATION_JSON.toString());
 		assertThat(getResponse.getContentAsString()).doesNotContain("Mike");
+	}
+
+	@Test
+	void testDeleteWithoutToken() throws Exception {
+		MockHttpServletResponse postResponse = mockMvc
+				.perform(delete("/api/users/" + firstUserId))
+				.andReturn()
+				.getResponse();
+
+		assertThat(postResponse.getStatus()).isEqualTo(403);
+	}
+
+	@Test
+	void testDeleteWithIncorrectToken() throws Exception {
+		MockHttpServletResponse postResponse = mockMvc
+				.perform(delete("/api/users/" + firstUserId)
+						.header(AUTHORIZATION, "FSDFSDFSFSDFSF"))
+				.andReturn()
+				.getResponse();
+
+		assertThat(postResponse.getStatus()).isEqualTo(403);
 	}
 
 }

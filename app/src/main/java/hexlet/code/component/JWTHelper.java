@@ -39,7 +39,7 @@ public class JWTHelper {
                 .compact();
     }
 
-    public Map<String, Object> verify(final String token) throws Exception {
+    public Map<String, Object> verify(final String token) {
         return Jwts.parser()
                 .requireIssuer(issuer)
                 .setClock(clock)

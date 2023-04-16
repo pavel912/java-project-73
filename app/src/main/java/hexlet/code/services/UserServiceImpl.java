@@ -1,11 +1,11 @@
 package hexlet.code.services;
 
 import hexlet.code.domain.User;
-import hexlet.code.dto.UserDTO;
-import hexlet.code.exceptions.UserNotFoundException;
+import hexlet.code.dto.UserDto;
+import hexlet.code.exceptions.DuplicateUsernameException;
+import hexlet.code.exceptions.EntityNotFoundException;
 import hexlet.code.repository.UserRepository;
 import lombok.AllArgsConstructor;
-import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,19 +26,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Autowired
     private final PasswordEncoder passwordEncoder;
 
-    private static final Exception USER_DOES_NOT_EXIST = new Exception("User with this ID does not exist");
-
-    private static final Exception INCORRECT_DATA_EXCEPTION = new Exception("Incorrect user data");
-    private static final Exception USER_ALREADY_EXISTS = new Exception("User with this email already exists");
-
     @Override
-    public User createUser(UserDTO userDto) throws Exception {
-        if (isIncorrectUserData(userDto)) {
-            throw INCORRECT_DATA_EXCEPTION;
+    public User createUser(UserDto userDto) throws EntityNotFoundException, DuplicateUsernameException {
+        if (userDto == null) {
+            throw new EntityNotFoundException("Empty user data");
         }
 
         if (userRepository.findByEmail(userDto.getEmail()) != null) {
-            throw USER_ALREADY_EXISTS;
+            throw new DuplicateUsernameException("User with email" + userDto.getEmail() + "already exists");
         }
 
         User user = userDtoToUser(userDto);
@@ -46,21 +41,21 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public User updateUser(UserDTO userDto) throws Exception {
-        if (isIncorrectUserData(userDto)) {
-            throw INCORRECT_DATA_EXCEPTION;
+    public User updateUser(UserDto userDto) throws EntityNotFoundException, DuplicateUsernameException {
+        if (userDto == null) {
+            throw new EntityNotFoundException("Empty user data");
         }
 
         User userWithSameLogin = userRepository.findByEmail(userDto.getEmail());
 
         if (userWithSameLogin != null && userWithSameLogin.getId() != userDto.getId()) {
-            throw USER_ALREADY_EXISTS;
+            throw new DuplicateUsernameException("User with email" + userDto.getEmail() + "already exists");
         }
 
         User user = userRepository.findById(userDto.getId());
 
         if (user == null) {
-            throw USER_DOES_NOT_EXIST;
+            throw new EntityNotFoundException("User with id" + userDto.getId() + "does not exist");
         }
 
         User updatedUser = userDtoToUser(userDto);
@@ -70,7 +65,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return userRepository.save(updatedUser);
     }
 
-    private User userDtoToUser(UserDTO userDto) {
+    private User userDtoToUser(UserDto userDto) {
         User user = new User();
 
         if (userDto == null) {
@@ -86,30 +81,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     }
 
-    private boolean isEmptyOrDoesNotHaveRequiredLength(String value, int length) {
-        return value == null || value.length() < length;
-    }
-
-    private boolean isIncorrectUserData(UserDTO userDto) {
-        if (userDto == null) {
-            return true;
-        }
-        if (isEmptyOrDoesNotHaveRequiredLength(userDto.getFirstName(), 1)) {
-            return true;
-        }
-        if (isEmptyOrDoesNotHaveRequiredLength(userDto.getLastName(), 1)) {
-            return true;
-        }
-        if (!EmailValidator.getInstance().isValid(userDto.getEmail())) {
-            return true;
-        }
-        if (isEmptyOrDoesNotHaveRequiredLength(userDto.getPassword(), 3)) {
-            return true;
-        }
-
-        return false;
-    }
-
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("user"));
@@ -117,7 +88,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         User user = userRepository.findByEmail(username);
 
         if (user == null) {
-            throw new UserNotFoundException("User with such username does not exist");
+            throw new EntityNotFoundException("User with such username does not exist");
         }
 
         return new org.springframework.security.core.userdetails.User(
