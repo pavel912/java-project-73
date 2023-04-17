@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import javax.validation.Valid;
 import java.util.List;
 
@@ -38,23 +37,23 @@ public class UserController {
         User user = userRepository.findById(id);
 
         if (user == null) {
-            throw new EntityNotFoundException("User with id" + id + "not found");
+            throw new EntityNotFoundException("User with id " + id + " not found");
         }
 
-        return userToUserDto(user);
+        return userService.userToUserDto(user);
     }
 
     @GetMapping(path = "")
     public List<UserDto> getUsers() {
         List<User> users = IterableUtils.toList(userRepository.findAll());
 
-        return users.stream().map(this::userToUserDto).toList();
+        return users.stream().map(x -> userService.userToUserDto(x)).toList();
     }
 
     @PostMapping(path = "")
     public UserDto createUser(@RequestBody @Valid final UserDto userDto) throws Exception {
             User user = userService.createUser(userDto);
-            return userToUserDto(user);
+            return userService.userToUserDto(user);
     }
 
     @PutMapping(path = "/{id}")
@@ -62,7 +61,7 @@ public class UserController {
     public UserDto updateUser(@PathVariable long id, @RequestBody @Valid final UserDto userDto) throws Exception {
             userDto.setId(id);
             User user = userService.updateUser(userDto);
-            return userToUserDto(user);
+            return userService.userToUserDto(user);
     }
 
     @DeleteMapping(path = "/{id}")
@@ -71,22 +70,11 @@ public class UserController {
         User user = userRepository.findById(id);
 
         if (user == null) {
-            throw new EntityNotFoundException("User with id" + id + "not found");
+            throw new EntityNotFoundException("User with id " + id + " not found");
         }
 
+        userService.checkUserAssociatedWithTasks(user);
+
         userRepository.delete(user);
-    }
-
-    private UserDto userToUserDto(User user) {
-        UserDto userDto = new UserDto();
-
-        userDto.setId(user.getId());
-        userDto.setFirstName(user.getFirstName());
-        userDto.setLastName(user.getLastName());
-        userDto.setEmail(user.getEmail());
-        userDto.setCreatedAt(user.getCreatedAt());
-
-        return userDto;
-
     }
 }

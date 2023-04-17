@@ -3,10 +3,13 @@ package hexlet.code.services;
 import hexlet.code.domain.User;
 import hexlet.code.dto.UserDto;
 import hexlet.code.exceptions.DuplicateUsernameException;
+import hexlet.code.exceptions.EntityDependOnOthers;
 import hexlet.code.exceptions.EntityNotFoundException;
+import hexlet.code.repository.TaskRepository;
 import hexlet.code.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -24,6 +27,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private UserRepository userRepository;
 
     @Autowired
+    private TaskRepository taskRepository;
+
+    @Autowired
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -33,7 +39,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
 
         if (userRepository.findByEmail(userDto.getEmail()) != null) {
-            throw new DuplicateUsernameException("User with email" + userDto.getEmail() + "already exists");
+            throw new DuplicateUsernameException("User with email " + userDto.getEmail() + " already exists");
         }
 
         User user = userDtoToUser(userDto);
@@ -49,13 +55,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         User userWithSameLogin = userRepository.findByEmail(userDto.getEmail());
 
         if (userWithSameLogin != null && userWithSameLogin.getId() != userDto.getId()) {
-            throw new DuplicateUsernameException("User with email" + userDto.getEmail() + "already exists");
+            throw new DuplicateUsernameException("User with email " + userDto.getEmail() + " already exists");
         }
 
         User user = userRepository.findById(userDto.getId());
 
         if (user == null) {
-            throw new EntityNotFoundException("User with id" + userDto.getId() + "does not exist");
+            throw new EntityNotFoundException("User with id " + userDto.getId() + " does not exist");
         }
 
         User updatedUser = userDtoToUser(userDto);
@@ -65,7 +71,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return userRepository.save(updatedUser);
     }
 
-    private User userDtoToUser(UserDto userDto) {
+    @Override
+    public User userDtoToUser(UserDto userDto) {
         User user = new User();
 
         if (userDto == null) {
@@ -95,4 +102,38 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 DEFAULT_AUTHORITIES
         );
     }
+
+    @Override
+    public UserDto userToUserDto(User user) {
+        UserDto userDto = new UserDto();
+
+        userDto.setId(user.getId());
+        userDto.setFirstName(user.getFirstName());
+        userDto.setLastName(user.getLastName());
+        userDto.setEmail(user.getEmail());
+        userDto.setCreatedAt(user.getCreatedAt());
+
+        return userDto;
+
+    }
+
+    @Override
+    public void checkUserAssociatedWithTasks(User user) {
+        taskRepository.findAll().forEach(task -> {
+            if (task.getAuthor() == user || task.getExecutor() == user) {
+                throw new EntityDependOnOthers("This user is an author or an exutor of at least one task");
+            }
+        });
+    }
+
+    @Override
+    public String getCurrentUserName() {
+        return SecurityContextHolder.getContext().getAuthentication().getName();
+    }
+
+    @Override
+    public User getCurrentUser() {
+        return userRepository.findByEmail(getCurrentUserName());
+    }
+
 }

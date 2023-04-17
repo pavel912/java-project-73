@@ -33,7 +33,7 @@ public class TaskStatusTests {
     private String token;
 
     @BeforeEach
-    public void createUserAndTask() throws Exception {
+    public void createUserAndTaskStatus() throws Exception {
         mockMvc
                 .perform(
                         post("/api/users")
@@ -57,7 +57,7 @@ public class TaskStatusTests {
 
         token = loginResponse.getContentAsString();
 
-        MockHttpServletResponse createTaskResponse = mockMvc
+        MockHttpServletResponse createTaskStatusResponse = mockMvc
                 .perform(post("/api/statuses")
                         .header(AUTHORIZATION, token)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -65,7 +65,7 @@ public class TaskStatusTests {
                 .andReturn()
                 .getResponse();
 
-        assertThat(createTaskResponse.getStatus()).isEqualTo(200);
+        assertThat(createTaskStatusResponse.getStatus()).isEqualTo(200);
 
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -73,7 +73,7 @@ public class TaskStatusTests {
                 .parseLong(
                         objectMapper
                                 .readValue(
-                                        createTaskResponse
+                                        createTaskStatusResponse
                                                 .getContentAsString(),
                                         new TypeReference<
                                                 Map<String, String>

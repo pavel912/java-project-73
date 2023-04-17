@@ -4,6 +4,7 @@ import hexlet.code.domain.TaskStatus;
 import hexlet.code.dto.TaskStatusDto;
 import hexlet.code.exceptions.EntityNotFoundException;
 import hexlet.code.repository.TaskStatusRepository;
+import hexlet.code.services.TaskStatusService;
 import liquibase.repackaged.org.apache.commons.collections4.IterableUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,17 +25,14 @@ public class TaskStatusController {
     @Autowired
     TaskStatusRepository taskStatusRepository;
 
+    @Autowired
+    TaskStatusService taskStatusService;
+
     @GetMapping(path = "")
     public List<TaskStatusDto> getAllTaskStatuses() {
         List<TaskStatus> taskStatuses = IterableUtils.toList(taskStatusRepository.findAll());
 
-        return taskStatuses.stream().map(taskStatus -> {
-            TaskStatusDto taskStatusDto = new TaskStatusDto();
-            taskStatusDto.setId(taskStatus.getId());
-            taskStatusDto.setName(taskStatus.getName());
-            taskStatusDto.setCreatedAt(taskStatus.getCreatedAt());
-            return taskStatusDto;
-        }).toList();
+        return taskStatuses.stream().map(taskStatus -> taskStatusService.taskStatusToDto(taskStatus)).toList();
     }
 
     @GetMapping(path = "/{id}")
@@ -45,12 +43,7 @@ public class TaskStatusController {
             throw new EntityNotFoundException("Task status with id" + id + "not found");
         }
 
-        TaskStatusDto taskStatusDto = new TaskStatusDto();
-        taskStatusDto.setId(taskStatus.getId());
-        taskStatusDto.setName(taskStatus.getName());
-        taskStatusDto.setCreatedAt(taskStatus.getCreatedAt());
-
-        return taskStatusDto;
+        return taskStatusService.taskStatusToDto(taskStatus);
     }
 
     @PostMapping(path = "")
@@ -60,12 +53,7 @@ public class TaskStatusController {
 
         TaskStatus resultingTaskStatus = taskStatusRepository.save(taskStatus);
 
-        TaskStatusDto resultingTaskStatusDto = new TaskStatusDto();
-        resultingTaskStatusDto.setId(resultingTaskStatus.getId());
-        resultingTaskStatusDto.setName(resultingTaskStatus.getName());
-        resultingTaskStatusDto.setCreatedAt(resultingTaskStatus.getCreatedAt());
-
-        return resultingTaskStatusDto;
+        return taskStatusService.taskStatusToDto(resultingTaskStatus);
     }
 
     @PutMapping(path = "/{id}")
@@ -81,12 +69,7 @@ public class TaskStatusController {
         taskStatus.setName(taskStatusDto.getName());
         TaskStatus resultingTaskStatus = taskStatusRepository.save(taskStatus);
 
-        TaskStatusDto resultingTaskStatusDto = new TaskStatusDto();
-        resultingTaskStatusDto.setId(resultingTaskStatus.getId());
-        resultingTaskStatusDto.setName(resultingTaskStatus.getName());
-        resultingTaskStatusDto.setCreatedAt(resultingTaskStatus.getCreatedAt());
-
-        return resultingTaskStatusDto;
+        return taskStatusService.taskStatusToDto(resultingTaskStatus);
     }
 
     @DeleteMapping(path = "/{id}")
@@ -96,6 +79,8 @@ public class TaskStatusController {
         if (taskStatus == null) {
             throw new EntityNotFoundException("Task status with id" + id + "not found");
         }
+
+        taskStatusService.checkStatusAssociatedWithTasks(taskStatus);
 
         taskStatusRepository.delete(taskStatus);
     }
