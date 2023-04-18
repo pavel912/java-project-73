@@ -29,6 +29,8 @@ public class TaskTests {
 
     private String token;
 
+    private long labelId;
+
     @BeforeEach
     public void createUserAndTask() throws Exception {
         MockHttpServletResponse createUserResponse = mockMvc
@@ -68,6 +70,18 @@ public class TaskTests {
 
         taskStatusId = TestUtils.parseIdFromResponse(createTaskStatusResponse.getContentAsString());
 
+        MockHttpServletResponse createLabelResponse = mockMvc
+                .perform(MockMvcRequestBuilders.post("/api/labels")
+                        .header(AUTHORIZATION, token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"name\": \"Bug\"}"))
+                .andReturn()
+                .getResponse();
+
+        assertThat(createLabelResponse.getStatus()).isEqualTo(200);
+
+        labelId = TestUtils.parseIdFromResponse(createLabelResponse.getContentAsString());
+
         MockHttpServletResponse createTaskResponse = mockMvc
                 .perform(MockMvcRequestBuilders.post("/api/tasks")
                         .header(AUTHORIZATION, token)
@@ -75,7 +89,8 @@ public class TaskTests {
                         .content("{\"name\": \"Create new feature\", "
                                 + "\"description\": \"Please add new feature\", "
                                 + String.format("\"taskStatusId\": \"%d\", ", taskStatusId)
-                                + String.format("\"executorId\": \"%d\"}", userId)))
+                                + String.format("\"executorId\": \"%d\", ", userId)
+                                + String.format("\"labelIds\": [%d]}", labelId)))
                 .andReturn()
                 .getResponse();
 
@@ -115,7 +130,8 @@ public class TaskTests {
                         .content("{\"name\": \"Add new feature\", "
                                 + "\"description\": \"Please add authorization\", "
                                 + String.format("\"taskStatusId\": \"%d\", ", taskStatusId)
-                                + String.format("\"executorId\": \"%d\"}", userId)))
+                                + String.format("\"executorId\": \"%d\", ", userId)
+                                + String.format("\"labelIds\": [%d]}", labelId)))
                 .andReturn()
                 .getResponse();
 
@@ -148,6 +164,8 @@ public class TaskTests {
         assertThat(getTasksResponse.getStatus()).isEqualTo(200);
         assertThat(getTasksResponse.getContentAsString()).doesNotContain("Create new feature");
 
+
+        // Check availability of related entities
         MockHttpServletResponse getUserResponse = mockMvc
                 .perform(MockMvcRequestBuilders.get("/api/users/" + userId)
                         .header(AUTHORIZATION, token))
@@ -164,6 +182,14 @@ public class TaskTests {
                 .getResponse();
 
         assertThat(getTaskStatusResponse.getStatus()).isEqualTo(200);
+
+        MockHttpServletResponse getLabelResponse = mockMvc
+                .perform(MockMvcRequestBuilders.get("/api/labels/" + labelId)
+                        .header(AUTHORIZATION, token))
+                .andReturn()
+                .getResponse();
+
+        assertThat(getLabelResponse.getStatus()).isEqualTo(200);
     }
 
     @Test
@@ -174,7 +200,8 @@ public class TaskTests {
                         .content("{\"name\": \"Add new feature\", "
                                 + "\"description\": \"Please add authorization\", "
                                 + String.format("\"taskStatusId\": \"%d\", ", taskStatusId)
-                                + String.format("\"executorId\": \"%d\"}", userId)))
+                                + String.format("\"executorId\": \"%d\", ", userId)
+                                + String.format("\"labelIds\": [%d]}", labelId)))
                 .andReturn()
                 .getResponse();
 
@@ -237,6 +264,17 @@ public class TaskTests {
     }
 
     @Test
+    void testDeleteLabelAssociatedWithTask() throws Exception {
+        MockHttpServletResponse deleteResponse = mockMvc
+                .perform(MockMvcRequestBuilders.delete("/api/labels/" + labelId)
+                        .header(AUTHORIZATION, token))
+                .andReturn()
+                .getResponse();
+
+        assertThat(deleteResponse.getStatus()).isEqualTo(409);
+    }
+
+    @Test
     void testDeleteOldTaskStatus() throws Exception {
         MockHttpServletResponse createTaskStatusResponse = mockMvc
                 .perform(MockMvcRequestBuilders.post("/api/statuses")
@@ -257,7 +295,8 @@ public class TaskTests {
                         .content("{\"name\": \"Add new feature\", "
                                 + "\"description\": \"Please add authorization\", "
                                 + String.format("\"taskStatusId\": \"%d\", ", newTaskStatusId)
-                                + String.format("\"executorId\": \"%d\"}", userId)))
+                                + String.format("\"executorId\": \"%d\", ", userId)
+                                + String.format("\"labelIds\": [%d]}", labelId)))
                 .andReturn()
                 .getResponse();
 
