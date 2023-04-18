@@ -10,6 +10,7 @@ import javax.persistence.Lob;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.Instant;
+import java.util.List;
 
 @Data
 @Getter
@@ -33,6 +34,8 @@ public class TaskDtoOutput {
     private UserDto author;
 
     private UserDto executor;
+
+    private List<LabelDto> labels;
 
     private Instant createdAt;
 }

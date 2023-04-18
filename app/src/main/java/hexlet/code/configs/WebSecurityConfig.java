@@ -39,6 +39,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private static final String TASK_CONTROLLER_PATH = "/tasks";
 
+    private static final String LABEL_CONTROLLER_PATH = "/labels";
+
     @Autowired
     UserRepository userRepository;
 
@@ -61,6 +63,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 new AntPathRequestMatcher(baseUrl + USER_CONTROLLER_PATH, GET.toString()),
                 new AntPathRequestMatcher(baseUrl + TASK_STATUS_CONTROLLER_PATH + "/**", GET.toString()),
                 new AntPathRequestMatcher(baseUrl + TASK_CONTROLLER_PATH + "/**", GET.toString()),
+                new AntPathRequestMatcher(baseUrl + LABEL_CONTROLLER_PATH + "/**", GET.toString()),
                 new NegatedRequestMatcher(new AntPathRequestMatcher(baseUrl + "/**"))
         );
         this.userDetailsService = userDetailsService;

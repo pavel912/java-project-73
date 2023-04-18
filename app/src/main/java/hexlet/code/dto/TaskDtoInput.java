@@ -9,6 +9,7 @@ import javax.persistence.Lob;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.Instant;
+import java.util.List;
 
 @Data
 @Getter
@@ -28,6 +29,8 @@ public class TaskDtoInput {
     private long taskStatusId;
 
     private long executorId;
+
+    private List<Long> labelIds;
 
     private Instant createdAt;
 }

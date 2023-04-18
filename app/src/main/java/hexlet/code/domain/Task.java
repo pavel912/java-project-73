@@ -12,16 +12,22 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "tasks")
 public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,6 +49,12 @@ public class Task {
     @ManyToOne(optional = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "executor_id")
     private User executor;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "tasks_labels",
+            joinColumns = {@JoinColumn(name = "tasks_id")},
+            inverseJoinColumns = {@JoinColumn(name = "labels_id")})
+    private List<Label> labels = new ArrayList<>();
 
     @CreationTimestamp
     private Instant createdAt;
