@@ -2,7 +2,6 @@ package hexlet.code.repository;
 
 import com.querydsl.core.types.Predicate;
 import hexlet.code.domain.Task;
-import hexlet.code.dto.TaskDtoInput;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
