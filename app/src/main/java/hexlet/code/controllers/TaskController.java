@@ -2,11 +2,17 @@ package hexlet.code.controllers;
 
 import com.querydsl.core.types.Predicate;
 import hexlet.code.domain.Task;
+import hexlet.code.domain.User;
 import hexlet.code.dto.TaskDtoInput;
 import hexlet.code.dto.TaskDtoOutput;
 import hexlet.code.exceptions.EntityNotFoundException;
 import hexlet.code.repository.TaskRepository;
 import hexlet.code.services.TaskService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import liquibase.repackaged.org.apache.commons.collections4.IterableUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.querydsl.binding.QuerydslPredicate;
@@ -36,6 +42,11 @@ public class TaskController {
             @taskRepository.findById(#id).getAuthor().getEmail() == authentication.getName()
             """;
 
+    @Operation(summary = "Get task by id")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Information retrieved",
+                    content = @Content(schema = @Schema(implementation = User.class))),
+            @ApiResponse(responseCode = "404", description = "Task not found")})
     @GetMapping(path = "/{id}")
     public TaskDtoOutput getTask(@PathVariable long id) {
         Task task = taskRepository.findById(id);
@@ -47,6 +58,10 @@ public class TaskController {
         return taskService.taskToTaskDto(task);
     }
 
+    @Operation(summary = "Get all tasks")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Information retrieved",
+                    content = @Content(schema = @Schema(implementation = User.class)))})
     @GetMapping(path = "")
     public List<TaskDtoOutput> getTasks(@QuerydslPredicate(root = Task.class) Predicate predicate) {
         List<Task> tasks = IterableUtils.toList(taskRepository.findAll(predicate));
@@ -54,6 +69,11 @@ public class TaskController {
         return tasks.stream().map(x -> taskService.taskToTaskDto(x)).toList();
     }
 
+    @Operation(summary = "Create task")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Task created",
+                    content = @Content(schema = @Schema(implementation = User.class))),
+            @ApiResponse(responseCode = "422", description = "Incorrect task data")})
     @PostMapping(path = "")
     public TaskDtoOutput createTask(@RequestBody @Valid TaskDtoInput taskDtoInput) {
         Task task = taskService.createTask(taskDtoInput);
@@ -61,6 +81,11 @@ public class TaskController {
         return taskService.taskToTaskDto(task);
     }
 
+    @Operation(summary = "Update task")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Task updated",
+                    content = @Content(schema = @Schema(implementation = User.class))),
+            @ApiResponse(responseCode = "422", description = "Incorrect task data")})
     @PutMapping(path = "/{id}")
     public TaskDtoOutput updateTask(@PathVariable long id, @RequestBody @Valid TaskDtoInput taskDtoInput) {
         taskDtoInput.setId(id);
@@ -71,6 +96,10 @@ public class TaskController {
         return taskService.taskToTaskDto(task);
     }
 
+    @Operation(summary = "Delete task")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Task deleted",
+                    content = @Content(schema = @Schema(implementation = User.class)))})
     @DeleteMapping(path = "/{id}")
     @PreAuthorize(ONLY_OWNER_BY_ID)
     public void deleteTask(@PathVariable long id) {

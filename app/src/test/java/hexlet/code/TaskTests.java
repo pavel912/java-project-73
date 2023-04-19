@@ -268,7 +268,7 @@ public class TaskTests {
                 .andReturn()
                 .getResponse();
 
-        assertThat(deleteResponse.getStatus()).isEqualTo(409);
+        assertThat(deleteResponse.getStatus()).isEqualTo(422);
     }
 
     @Test
@@ -279,7 +279,7 @@ public class TaskTests {
                 .andReturn()
                 .getResponse();
 
-        assertThat(deleteResponse.getStatus()).isEqualTo(409);
+        assertThat(deleteResponse.getStatus()).isEqualTo(422);
     }
 
     @Test
@@ -290,7 +290,7 @@ public class TaskTests {
                 .andReturn()
                 .getResponse();
 
-        assertThat(deleteResponse.getStatus()).isEqualTo(409);
+        assertThat(deleteResponse.getStatus()).isEqualTo(422);
     }
 
     @Test

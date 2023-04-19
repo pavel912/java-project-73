@@ -1,10 +1,16 @@
 package hexlet.code.controllers;
 
 import hexlet.code.domain.Label;
+import hexlet.code.domain.User;
 import hexlet.code.dto.LabelDto;
 import hexlet.code.exceptions.EntityNotFoundException;
 import hexlet.code.repository.LabelRepository;
 import hexlet.code.services.LabelService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import liquibase.repackaged.org.apache.commons.collections4.IterableUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,6 +34,11 @@ public class LabelController {
     @Autowired
     LabelService labelService;
 
+    @Operation(summary = "Get task label by id")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Information retrieved",
+                    content = @Content(schema = @Schema(implementation = User.class))),
+            @ApiResponse(responseCode = "404", description = "Label not found")})
     @GetMapping(path = "/{id}")
     public LabelDto getLabel(@PathVariable long id) {
         Label label = labelRepository.findById(id);
@@ -39,6 +50,10 @@ public class LabelController {
         return labelService.labelToDto(label);
     }
 
+    @Operation(summary = "Get all task labels")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Information retrieved",
+                    content = @Content(schema = @Schema(implementation = User.class)))})
     @GetMapping(path = "")
     public List<LabelDto> getLabels() {
         List<Label> labels = IterableUtils.toList(labelRepository.findAll());
@@ -46,6 +61,11 @@ public class LabelController {
         return labels.stream().map(label -> labelService.labelToDto(label)).toList();
     }
 
+    @Operation(summary = "Create label")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Label created",
+                    content = @Content(schema = @Schema(implementation = User.class))),
+            @ApiResponse(responseCode = "422", description = "Incorrect label data")})
     @PostMapping(path = "")
     public LabelDto createLabel(@RequestBody @Valid LabelDto labelDto) {
         Label label = new Label();
@@ -56,6 +76,12 @@ public class LabelController {
         return labelService.labelToDto(resultingLabel);
     }
 
+    @Operation(summary = "Update label")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Label updated",
+                    content = @Content(schema = @Schema(implementation = User.class))),
+            @ApiResponse(responseCode = "404", description = "Label not found"),
+            @ApiResponse(responseCode = "422", description = "Incorrect label data")})
     @PutMapping(path = "/{id}")
     public LabelDto updateLabel(@PathVariable long id, @RequestBody @Valid LabelDto labelDto) {
         Label label = labelRepository.findById(id);
@@ -71,6 +97,11 @@ public class LabelController {
         return labelService.labelToDto(resultingLabel);
     }
 
+    @Operation(summary = "Delete label")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Label deleted",
+                    content = @Content(schema = @Schema(implementation = User.class))),
+            @ApiResponse(responseCode = "404", description = "Label not found")})
     @DeleteMapping(path = "/{id}")
     public void deleteLabel(@PathVariable long id) {
         Label label = labelRepository.findById(id);
