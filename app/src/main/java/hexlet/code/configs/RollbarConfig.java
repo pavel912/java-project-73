@@ -3,7 +3,6 @@ package hexlet.code.configs;
 import com.rollbar.notifier.Rollbar;
 import com.rollbar.notifier.config.Config;
 import com.rollbar.spring.webmvc.RollbarSpringConfigBuilder;
-import net.bytebuddy.asm.Advice;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -27,7 +26,7 @@ public class RollbarConfig {
     private String activeProfile;
 
     /**
-     * Register a Rollbar bean to configure App with Rollbar.
+     * @return rollbar
      */
     @Bean
     public Rollbar rollbar() {
