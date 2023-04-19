@@ -1,5 +1,6 @@
 package hexlet.code.controllers;
 
+import com.querydsl.core.types.Predicate;
 import hexlet.code.domain.Task;
 import hexlet.code.dto.TaskDtoInput;
 import hexlet.code.dto.TaskDtoOutput;
@@ -8,6 +9,7 @@ import hexlet.code.repository.TaskRepository;
 import hexlet.code.services.TaskService;
 import liquibase.repackaged.org.apache.commons.collections4.IterableUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.querydsl.binding.QuerydslPredicate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,8 +48,8 @@ public class TaskController {
     }
 
     @GetMapping(path = "")
-    public List<TaskDtoOutput> getTasks() {
-        List<Task> tasks = IterableUtils.toList(taskRepository.findAll());
+    public List<TaskDtoOutput> getTasks(@QuerydslPredicate(root = Task.class) Predicate predicate) {
+        List<Task> tasks = IterableUtils.toList(taskRepository.findAll(predicate));
 
         return tasks.stream().map(x -> taskService.taskToTaskDto(x)).toList();
     }
