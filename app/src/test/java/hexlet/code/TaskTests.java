@@ -100,14 +100,33 @@ public class TaskTests {
     }
 
     @Test
-    void testGetAllTasks() throws Exception {
-        MockHttpServletResponse getResponse = mockMvc
+    void testGetTasks() throws Exception {
+        MockHttpServletResponse getAllResponse = mockMvc
                 .perform(MockMvcRequestBuilders.get("/api/tasks"))
                 .andReturn()
                 .getResponse();
 
-        assertThat(getResponse.getStatus()).isEqualTo(200);
-        assertThat(getResponse.getContentAsString()).contains("Create new feature");
+        assertThat(getAllResponse.getStatus()).isEqualTo(200);
+        assertThat(getAllResponse.getContentAsString()).contains("Create new feature");
+
+        MockHttpServletResponse getWithFilterResponse = mockMvc
+                .perform(MockMvcRequestBuilders.get(
+                        String.format("/api/tasks?taskStatus=%d&executorId=%d&labels=%d&authorId=%d",
+                                taskStatusId, userId, labelId, userId)))
+                .andReturn()
+                .getResponse();
+
+        assertThat(getWithFilterResponse.getStatus()).isEqualTo(200);
+        assertThat(getWithFilterResponse.getContentAsString()).contains("Create new feature");
+
+
+        MockHttpServletResponse getWithFilterEmptyResponse = mockMvc
+                .perform(MockMvcRequestBuilders.get("/api/tasks?authorId=10000000"))
+                .andReturn()
+                .getResponse();
+
+        assertThat(getWithFilterEmptyResponse.getStatus()).isEqualTo(200);
+        assertThat(getWithFilterEmptyResponse.getContentAsString()).doesNotContain("Create new feature");
     }
 
     @Test
