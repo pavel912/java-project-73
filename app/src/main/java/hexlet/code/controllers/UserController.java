@@ -1,5 +1,6 @@
 package hexlet.code.controllers;
 
+import com.rollbar.notifier.Rollbar;
 import hexlet.code.domain.User;
 import hexlet.code.dto.UserDto;
 import hexlet.code.exceptions.EntityNotFoundException;
@@ -35,6 +36,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private Rollbar rollbar;
 
     private static final String ONLY_OWNER_BY_ID = """
             @userRepository.findById(#id).getEmail() == authentication.getName()
@@ -73,8 +77,9 @@ public class UserController {
             @ApiResponse(responseCode = "422", description = "Incorrect user data")})
     @PostMapping(path = "")
     public UserDto createUser(@RequestBody @Valid final UserDto userDto) throws Exception {
-            User user = userService.createUser(userDto);
-            return userService.userToUserDto(user);
+        User user = userService.createUser(userDto);
+        rollbar.debug("User created");
+        return userService.userToUserDto(user);
     }
 
     @Operation(summary = "Update user")
@@ -86,9 +91,9 @@ public class UserController {
     @PutMapping(path = "/{id}")
     @PreAuthorize(ONLY_OWNER_BY_ID)
     public UserDto updateUser(@PathVariable long id, @RequestBody @Valid final UserDto userDto) throws Exception {
-            userDto.setId(id);
-            User user = userService.updateUser(userDto);
-            return userService.userToUserDto(user);
+        userDto.setId(id);
+        User user = userService.updateUser(userDto);
+        return userService.userToUserDto(user);
     }
 
     @Operation(summary = "Delete user")

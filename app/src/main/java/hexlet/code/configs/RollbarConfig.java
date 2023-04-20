@@ -30,7 +30,6 @@ public class RollbarConfig {
      */
     @Bean
     public Rollbar rollbar() {
-
         return new Rollbar(getRollbarConfigs(rollbarToken));
     }
 
@@ -38,7 +37,7 @@ public class RollbarConfig {
 
         return RollbarSpringConfigBuilder.withAccessToken(accessToken)
                 .environment("development")
-                .enabled(activeProfile == "prod")
+                .enabled(activeProfile.equals("prod"))
                 .build();
     }
 }
