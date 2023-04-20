@@ -37,9 +37,6 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private Rollbar rollbar;
-
     private static final String ONLY_OWNER_BY_ID = """
             @userRepository.findById(#id).getEmail() == authentication.getName()
             """;
@@ -78,7 +75,6 @@ public class UserController {
     @PostMapping(path = "")
     public UserDto createUser(@RequestBody @Valid final UserDto userDto) throws Exception {
         User user = userService.createUser(userDto);
-        rollbar.debug("User created");
         return userService.userToUserDto(user);
     }
 
