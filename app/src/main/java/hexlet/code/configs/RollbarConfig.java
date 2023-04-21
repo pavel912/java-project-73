@@ -26,7 +26,7 @@ public class RollbarConfig {
     private String activeProfile;
 
     /**
-     * @return rollbar
+     * @return Rollbar bean for tracking errors in application
      */
     @Bean
     public Rollbar rollbar() {
