@@ -7,6 +7,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import hexlet.code.component.JWTHelper;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -16,7 +18,7 @@ import static hexlet.code.configs.WebSecurityConfig.DEFAULT_AUTHORITIES;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.SPRING_SECURITY_FORM_USERNAME_KEY;
 
-
+@SecurityScheme(type = SecuritySchemeType.APIKEY, name="BearerAuth")
 public class JWTAuthorizationFilter extends OncePerRequestFilter {
 
     private static final String BEARER = "Bearer";

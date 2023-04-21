@@ -24,5 +24,6 @@ spring:
       ddl-auto: create-drop
 
 springdoc:
+  show-login-endpoint: true
   swagger-ui:
     path: /swagger.html
