@@ -1,6 +1,5 @@
 package hexlet.code.controllers;
 
-import com.rollbar.notifier.Rollbar;
 import hexlet.code.domain.User;
 import hexlet.code.dto.UserDto;
 import hexlet.code.exceptions.EntityNotFoundException;

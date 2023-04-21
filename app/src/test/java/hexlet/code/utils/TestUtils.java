@@ -68,7 +68,7 @@ public class TestUtils {
         Map<String, Object> fileContent = objectMapper
                 .readValue(
                         new File(filePath),
-                        new TypeReference<Map<String, Object>>(){ });
+                        new TypeReference<Map<String, Object>>() { });
 
         fileContent.put("taskStatusId", taskStatusId);
         fileContent.put("executorId", userId);

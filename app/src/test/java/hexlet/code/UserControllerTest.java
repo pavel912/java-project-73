@@ -33,11 +33,17 @@ class UserControllerTest {
 
 	@BeforeEach
 	public void createTestUsers() throws Exception {
+
+		String fileContent = TestUtils
+				.readJsonFromFile(
+						TestUtils.USERS_PATH
+								+ "/JohnSmith.json");
+
 		MockHttpServletResponse createResponseJohn = mockMvc
 				.perform(
 						post("/api/users")
 								.contentType(MediaType.APPLICATION_JSON)
-								.content(TestUtils.readJsonFromFile(TestUtils.USERS_PATH + "/JohnSmith.json"))
+								.content(fileContent)
 				)
 				.andReturn()
 				.getResponse();
@@ -46,11 +52,16 @@ class UserControllerTest {
 
 		firstUserId = TestUtils.parseIdFromResponse(createResponseJohn.getContentAsString());
 
+		fileContent = TestUtils
+				.readJsonFromFile(
+						TestUtils.USERS_PATH
+								+ "/JackDoe.json");
+
 		MockHttpServletResponse createResponseJack = mockMvc
 				.perform(
 						post("/api/users")
 								.contentType(MediaType.APPLICATION_JSON)
-								.content(TestUtils.readJsonFromFile(TestUtils.USERS_PATH + "/JackDoe.json"))
+								.content(fileContent)
 				)
 				.andReturn()
 				.getResponse();
@@ -62,10 +73,15 @@ class UserControllerTest {
 
 	@Test
 	void testGetUser() throws Exception {
+		String fileContent = TestUtils
+				.readJsonFromFile(
+				TestUtils.USERS_LOGIN_PATH
+						+ "/JohnSmith.json");
+
 		MockHttpServletResponse loginResponse = mockMvc
 				.perform(post("/api/login")
 						.contentType(MediaType.APPLICATION_JSON)
-						.content(TestUtils.readJsonFromFile(TestUtils.USERS_LOGIN_PATH + "/JohnSmith.json"))
+						.content(fileContent)
 				)
 				.andReturn()
 				.getResponse();
@@ -100,11 +116,16 @@ class UserControllerTest {
 
 	@Test
 	void testCreateUserPositive() throws Exception {
+		String fileContent = TestUtils
+				.readJsonFromFile(
+				TestUtils.USERS_PATH
+						+ "/JacksonBind.json");
+
 		MockHttpServletResponse postResponse = mockMvc
 				.perform(
 						post("/api/users")
 								.contentType(MediaType.APPLICATION_JSON)
-								.content(TestUtils.readJsonFromFile(TestUtils.USERS_PATH + "/JacksonBind.json"))
+								.content(fileContent)
 				)
 				.andReturn()
 				.getResponse();
@@ -123,10 +144,15 @@ class UserControllerTest {
 
 	@Test
 	void testUpdateUserPositive() throws Exception {
+		String fileContent = TestUtils
+				.readJsonFromFile(
+				TestUtils.USERS_LOGIN_PATH
+						+ "/JohnSmith.json");
+
 		MockHttpServletResponse loginResponse = mockMvc
 				.perform(post("/api/login")
 						.contentType(MediaType.APPLICATION_JSON)
-						.content(TestUtils.readJsonFromFile(TestUtils.USERS_LOGIN_PATH + "/JohnSmith.json"))
+						.content(fileContent)
 				)
 				.andReturn()
 				.getResponse();
@@ -135,12 +161,17 @@ class UserControllerTest {
 
 		String token = loginResponse.getContentAsString();
 
+		fileContent = TestUtils
+				.readJsonFromFile(
+				TestUtils.USERS_PATH
+						+ "/MikeSmith.json");
+
 		MockHttpServletResponse postResponse = mockMvc
 				.perform(
 						put("/api/users/" + firstUserId)
 								.header(AUTHORIZATION, token)
 								.contentType(MediaType.APPLICATION_JSON)
-								.content(TestUtils.readJsonFromFile(TestUtils.USERS_PATH + "/MikeSmith.json"))
+								.content(fileContent)
 				)
 				.andReturn()
 				.getResponse();
@@ -160,10 +191,15 @@ class UserControllerTest {
 
 	@Test
 	void testDeleteUserPositive() throws Exception {
+		String fileContent = TestUtils
+				.readJsonFromFile(
+				TestUtils.USERS_LOGIN_PATH
+						+ "/JackDoe.json");
+
 		MockHttpServletResponse loginResponse = mockMvc
 				.perform(post("/api/login")
 						.contentType(MediaType.APPLICATION_JSON)
-						.content(TestUtils.readJsonFromFile(TestUtils.USERS_LOGIN_PATH + "/JackDoe.json"))
+						.content(fileContent)
 				)
 				.andReturn()
 				.getResponse();
@@ -192,11 +228,16 @@ class UserControllerTest {
 
 	@Test
 	void testCreateUserIncorrectData() throws Exception {
+		String fileContent = TestUtils
+				.readJsonFromFile(
+				TestUtils.USERS_PATH
+						+ "/incorrectData.json");
+
 		MockHttpServletResponse postResponse = mockMvc
 				.perform(
 						post("/api/users")
 								.contentType(MediaType.APPLICATION_JSON)
-								.content(TestUtils.readJsonFromFile(TestUtils.USERS_PATH + "/incorrectData.json"))
+								.content(fileContent)
 				)
 				.andReturn()
 				.getResponse();
@@ -215,11 +256,16 @@ class UserControllerTest {
 
 	@Test
 	void testCreateUserWithSameLogin() throws Exception {
+		String fileContent = TestUtils
+				.readJsonFromFile(
+				TestUtils.USERS_PATH
+						+ "/MikeSmith.json");
+
 		MockHttpServletResponse postResponse = mockMvc
 				.perform(
 						post("/api/users")
 								.contentType(MediaType.APPLICATION_JSON)
-								.content(TestUtils.readJsonFromFile(TestUtils.USERS_PATH + "/MikeSmith.json"))
+								.content(fileContent)
 				)
 				.andReturn()
 				.getResponse();
@@ -238,10 +284,15 @@ class UserControllerTest {
 
 	@Test
 	void testUpdateUserIncorrectData() throws Exception {
+		String fileContent = TestUtils
+				.readJsonFromFile(
+				TestUtils.USERS_LOGIN_PATH
+						+ "/JohnSmith.json");
+
 		MockHttpServletResponse loginResponse = mockMvc
 				.perform(post("/api/login")
 						.contentType(MediaType.APPLICATION_JSON)
-						.content(TestUtils.readJsonFromFile(TestUtils.USERS_LOGIN_PATH + "/JohnSmith.json"))
+						.content(fileContent)
 				)
 				.andReturn()
 				.getResponse();
@@ -250,12 +301,17 @@ class UserControllerTest {
 
 		String token = loginResponse.getContentAsString();
 
+		fileContent = TestUtils
+				.readJsonFromFile(
+				TestUtils.USERS_PATH
+						+ "/incorrectData.json");
+
 		MockHttpServletResponse putResponse = mockMvc
 				.perform(
 						put("/api/users/" + firstUserId)
 								.header(AUTHORIZATION, token)
 								.contentType(MediaType.APPLICATION_JSON)
-								.content(TestUtils.readJsonFromFile(TestUtils.USERS_PATH + "/incorrectData.json"))
+								.content(fileContent)
 				)
 				.andReturn()
 				.getResponse();
@@ -274,10 +330,15 @@ class UserControllerTest {
 
 	@Test
 	void testUpdateOtherUser() throws Exception {
+		String fileContent = TestUtils
+				.readJsonFromFile(
+				TestUtils.USERS_LOGIN_PATH
+						+ "/JohnSmith.json");
+
 		MockHttpServletResponse loginResponse = mockMvc
 				.perform(post("/api/login")
 						.contentType(MediaType.APPLICATION_JSON)
-						.content(TestUtils.readJsonFromFile(TestUtils.USERS_LOGIN_PATH + "/JohnSmith.json"))
+						.content(fileContent)
 				)
 				.andReturn()
 				.getResponse();
@@ -286,12 +347,17 @@ class UserControllerTest {
 
 		String token = loginResponse.getContentAsString();
 
+		fileContent = TestUtils
+				.readJsonFromFile(
+				TestUtils.USERS_PATH
+						+ "/JohnSmith.json");
+
 		MockHttpServletResponse putResponse = mockMvc
 				.perform(
 						put("/api/users/" + secondUserId)
 								.header(AUTHORIZATION, token)
 								.contentType(MediaType.APPLICATION_JSON)
-								.content(TestUtils.readJsonFromFile(TestUtils.USERS_PATH + "/JohnSmith.json"))
+								.content(fileContent)
 				)
 				.andReturn()
 				.getResponse();
@@ -301,10 +367,15 @@ class UserControllerTest {
 
 	@Test
 	void testUpdateUserWithSameLogin() throws Exception {
+		String fileContent = TestUtils
+				.readJsonFromFile(
+				TestUtils.USERS_LOGIN_PATH
+						+ "/JackDoe.json");
+
 		MockHttpServletResponse loginResponse = mockMvc
 				.perform(post("/api/login")
 						.contentType(MediaType.APPLICATION_JSON)
-						.content(TestUtils.readJsonFromFile(TestUtils.USERS_LOGIN_PATH + "/JackDoe.json"))
+						.content(fileContent)
 				)
 				.andReturn()
 				.getResponse();
@@ -313,12 +384,17 @@ class UserControllerTest {
 
 		String token = loginResponse.getContentAsString();
 
+		fileContent = TestUtils
+				.readJsonFromFile(
+				TestUtils.USERS_PATH
+						+ "/MikeSmith.json");
+
 		MockHttpServletResponse putResponse = mockMvc
 				.perform(
 						put("/api/users/" + secondUserId)
 								.header(AUTHORIZATION, token)
 								.contentType(MediaType.APPLICATION_JSON)
-								.content(TestUtils.readJsonFromFile(TestUtils.USERS_PATH + "/MikeSmith.json"))
+								.content(fileContent)
 				)
 				.andReturn()
 				.getResponse();
@@ -337,10 +413,15 @@ class UserControllerTest {
 
 	@Test
 	void testDeleteOtherUser() throws Exception {
+		String fileContent = TestUtils
+				.readJsonFromFile(
+				TestUtils.USERS_LOGIN_PATH
+						+ "/JackDoe.json");
+
 		MockHttpServletResponse loginResponse = mockMvc
 				.perform(post("/api/login")
 						.contentType(MediaType.APPLICATION_JSON)
-						.content(TestUtils.readJsonFromFile(TestUtils.USERS_LOGIN_PATH + "/JackDoe.json"))
+						.content(fileContent)
 				)
 				.andReturn()
 				.getResponse();
