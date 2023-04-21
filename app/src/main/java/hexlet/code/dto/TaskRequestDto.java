@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import javax.persistence.Lob;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -17,8 +16,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class TaskDtoOutput {
-    @NotNull
+public class TaskRequestDto {
     private long id;
 
     @NotBlank
@@ -28,14 +26,11 @@ public class TaskDtoOutput {
     private String description;
 
     @NotNull
-    private TaskStatusDto taskStatus;
+    private long taskStatusId;
 
-    @NotNull
-    private UserDto author;
+    private long executorId;
 
-    private UserDto executor;
-
-    private List<LabelDto> labels;
+    private List<Long> labelIds;
 
     private Instant createdAt;
 }

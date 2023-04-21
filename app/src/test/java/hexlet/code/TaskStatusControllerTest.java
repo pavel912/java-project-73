@@ -1,7 +1,6 @@
 package hexlet.code;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import hexlet.code.utils.TestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +10,6 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -24,7 +21,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-public class TaskStatusTests {
+public class TaskStatusControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
@@ -38,10 +35,7 @@ public class TaskStatusTests {
                 .perform(
                         post("/api/users")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content("{\"firstName\": \"John\","
-                                        + " \"lastName\": \"Smith\","
-                                        + " \"email\": \"jsmith@mail.ru\","
-                                        + " \"password\": \"jsmith\"}")
+                                .content(TestUtils.readJsonFromFile(TestUtils.USERS_PATH + "/JohnSmith.json"))
                 )
                 .andReturn()
                 .getResponse();
@@ -50,8 +44,8 @@ public class TaskStatusTests {
         MockHttpServletResponse loginResponse = mockMvc
                 .perform(post("/api/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"username\": \"jsmith@mail.ru\", "
-                                + "\"password\": \"jsmith\"}"))
+                        .content(TestUtils.readJsonFromFile(TestUtils.USERS_LOGIN_PATH + "/JohnSmith.json"))
+                )
                 .andReturn()
                 .getResponse();
 
@@ -61,24 +55,14 @@ public class TaskStatusTests {
                 .perform(post("/api/statuses")
                         .header(AUTHORIZATION, token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"name\": \"New\"}"))
+                        .content(TestUtils.readJsonFromFile(TestUtils.TASK_STATUS_PATH + "/New.json"))
+                )
                 .andReturn()
                 .getResponse();
 
         assertThat(createTaskStatusResponse.getStatus()).isEqualTo(200);
 
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        taskStatusId = Long
-                .parseLong(
-                        objectMapper
-                                .readValue(
-                                        createTaskStatusResponse
-                                                .getContentAsString(),
-                                        new TypeReference<
-                                                Map<String, String>
-                                                >() { }
-                                ).get("id"));
+        taskStatusId = TestUtils.parseIdFromResponse(createTaskStatusResponse.getContentAsString());
     }
 
     @Test
@@ -109,7 +93,8 @@ public class TaskStatusTests {
                 .perform(put("/api/statuses/" + taskStatusId)
                         .header(AUTHORIZATION, token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"name\": \"Old\"}"))
+                        .content(TestUtils.readJsonFromFile(TestUtils.TASK_STATUS_PATH + "/Old.json"))
+                )
                 .andReturn()
                 .getResponse();
 

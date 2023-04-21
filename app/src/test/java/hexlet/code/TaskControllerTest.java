@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.scheduling.support.TaskUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +18,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-public class TaskTests {
+public class TaskControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
@@ -37,10 +38,7 @@ public class TaskTests {
                 .perform(
                         MockMvcRequestBuilders.post("/api/users")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content("{\"firstName\": \"John\","
-                                        + " \"lastName\": \"Smith\","
-                                        + " \"email\": \"jsmith@mail.ru\","
-                                        + " \"password\": \"jsmith\"}")
+                                .content(TestUtils.readJsonFromFile(TestUtils.USERS_PATH + "/JohnSmith.json"))
                 )
                 .andReturn()
                 .getResponse();
@@ -51,8 +49,8 @@ public class TaskTests {
         MockHttpServletResponse loginResponse = mockMvc
                 .perform(MockMvcRequestBuilders.post("/api/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"username\": \"jsmith@mail.ru\", "
-                                + "\"password\": \"jsmith\"}"))
+                        .content(TestUtils.readJsonFromFile(TestUtils.USERS_LOGIN_PATH + "/JohnSmith.json"))
+                )
                 .andReturn()
                 .getResponse();
 
@@ -62,7 +60,8 @@ public class TaskTests {
                 .perform(MockMvcRequestBuilders.post("/api/statuses")
                         .header(AUTHORIZATION, token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"name\": \"New\"}"))
+                        .content(TestUtils.readJsonFromFile(TestUtils.TASK_STATUS_PATH + "/New.json"))
+                )
                 .andReturn()
                 .getResponse();
 
@@ -74,7 +73,8 @@ public class TaskTests {
                 .perform(MockMvcRequestBuilders.post("/api/labels")
                         .header(AUTHORIZATION, token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"name\": \"Bug\"}"))
+                        .content(TestUtils.readJsonFromFile(TestUtils.LABELS_PATH + "/Bug.json"))
+                )
                 .andReturn()
                 .getResponse();
 
@@ -86,11 +86,12 @@ public class TaskTests {
                 .perform(MockMvcRequestBuilders.post("/api/tasks")
                         .header(AUTHORIZATION, token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"name\": \"Create new feature\", "
-                                + "\"description\": \"Please add new feature\", "
-                                + String.format("\"taskStatusId\": \"%d\", ", taskStatusId)
-                                + String.format("\"executorId\": \"%d\", ", userId)
-                                + String.format("\"labelIds\": [%d]}", labelId)))
+                        .content(TestUtils
+                                .buildTaskJsonFromFile(TestUtils.TASKS_PATH + "/CreateNewFeature.json",
+                                        taskStatusId,
+                                        userId,
+                                        labelId))
+                )
                 .andReturn()
                 .getResponse();
 
@@ -146,11 +147,12 @@ public class TaskTests {
                 .perform(MockMvcRequestBuilders.put("/api/tasks/" + taskId)
                         .header(AUTHORIZATION, token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"name\": \"Add new feature\", "
-                                + "\"description\": \"Please add authorization\", "
-                                + String.format("\"taskStatusId\": \"%d\", ", taskStatusId)
-                                + String.format("\"executorId\": \"%d\", ", userId)
-                                + String.format("\"labelIds\": [%d]}", labelId)))
+                        .content(TestUtils
+                                .buildTaskJsonFromFile(TestUtils.TASKS_PATH + "/AddNewFeature.json",
+                                        taskStatusId,
+                                        userId,
+                                        labelId))
+                )
                 .andReturn()
                 .getResponse();
 
@@ -216,11 +218,12 @@ public class TaskTests {
         MockHttpServletResponse putResponse = mockMvc
                 .perform(MockMvcRequestBuilders.put("/api/tasks/" + taskId)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"name\": \"Add new feature\", "
-                                + "\"description\": \"Please add authorization\", "
-                                + String.format("\"taskStatusId\": \"%d\", ", taskStatusId)
-                                + String.format("\"executorId\": \"%d\", ", userId)
-                                + String.format("\"labelIds\": [%d]}", labelId)))
+                        .content(TestUtils
+                                .buildTaskJsonFromFile(TestUtils.TASKS_PATH + "/AddNewFeature.json",
+                                        taskStatusId,
+                                        userId,
+                                        labelId))
+                )
                 .andReturn()
                 .getResponse();
 
@@ -233,10 +236,7 @@ public class TaskTests {
                 .perform(
                         MockMvcRequestBuilders.post("/api/users")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content("{\"firstName\": \"Bob\","
-                                        + " \"lastName\": \"Boba\","
-                                        + " \"email\": \"bob@mail.ru\","
-                                        + " \"password\": \"bob\"}")
+                                .content(TestUtils.readJsonFromFile(TestUtils.USERS_PATH + "/JackDoe.json"))
                 )
                 .andReturn()
                 .getResponse();
@@ -244,8 +244,8 @@ public class TaskTests {
         MockHttpServletResponse loginResponse = mockMvc
                 .perform(MockMvcRequestBuilders.post("/api/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"username\": \"bob@mail.ru\", "
-                                + "\"password\": \"bob\"}"))
+                        .content(TestUtils.readJsonFromFile(TestUtils.USERS_LOGIN_PATH + "/JackDoe.json"))
+                )
                 .andReturn()
                 .getResponse();
 
@@ -299,7 +299,8 @@ public class TaskTests {
                 .perform(MockMvcRequestBuilders.post("/api/statuses")
                         .header(AUTHORIZATION, token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"name\": \"In progress\"}"))
+                        .content(TestUtils.readJsonFromFile(TestUtils.TASK_STATUS_PATH + "/Old.json"))
+                )
                 .andReturn()
                 .getResponse();
 
@@ -311,11 +312,12 @@ public class TaskTests {
                 .perform(MockMvcRequestBuilders.put("/api/tasks/" + taskId)
                         .header(AUTHORIZATION, token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"name\": \"Add new feature\", "
-                                + "\"description\": \"Please add authorization\", "
-                                + String.format("\"taskStatusId\": \"%d\", ", newTaskStatusId)
-                                + String.format("\"executorId\": \"%d\", ", userId)
-                                + String.format("\"labelIds\": [%d]}", labelId)))
+                        .content(TestUtils
+                                .buildTaskJsonFromFile(TestUtils.TASKS_PATH + "/AddNewFeature.json",
+                                        newTaskStatusId,
+                                        userId,
+                                        labelId))
+                )
                 .andReturn()
                 .getResponse();
 

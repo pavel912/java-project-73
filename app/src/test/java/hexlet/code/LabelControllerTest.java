@@ -18,7 +18,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-public class LabelsTests {
+public class LabelControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
@@ -32,10 +32,7 @@ public class LabelsTests {
                 .perform(
                         MockMvcRequestBuilders.post("/api/users")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content("{\"firstName\": \"John\","
-                                        + " \"lastName\": \"Smith\","
-                                        + " \"email\": \"jsmith@mail.ru\","
-                                        + " \"password\": \"jsmith\"}")
+                                .content(TestUtils.readJsonFromFile(TestUtils.USERS_PATH + "/JohnSmith.json"))
                 )
                 .andReturn()
                 .getResponse();
@@ -44,8 +41,8 @@ public class LabelsTests {
         MockHttpServletResponse loginResponse = mockMvc
                 .perform(MockMvcRequestBuilders.post("/api/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"username\": \"jsmith@mail.ru\", "
-                                + "\"password\": \"jsmith\"}"))
+                        .content(TestUtils.readJsonFromFile(TestUtils.USERS_LOGIN_PATH + "/JohnSmith.json"))
+                )
                 .andReturn()
                 .getResponse();
 
@@ -55,7 +52,8 @@ public class LabelsTests {
                 .perform(MockMvcRequestBuilders.post("/api/labels")
                         .header(AUTHORIZATION, token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"name\": \"Bug\"}"))
+                        .content(TestUtils.readJsonFromFile(TestUtils.LABELS_PATH + "/Bug.json"))
+                )
                 .andReturn()
                 .getResponse();
 
@@ -92,7 +90,8 @@ public class LabelsTests {
                 .perform(MockMvcRequestBuilders.put("/api/labels/" + labelId)
                         .header(AUTHORIZATION, token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"name\": \"Feature\"}"))
+                        .content(TestUtils.readJsonFromFile(TestUtils.LABELS_PATH + "/Feature.json"))
+                )
                 .andReturn()
                 .getResponse();
 

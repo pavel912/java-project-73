@@ -3,8 +3,8 @@ package hexlet.code.controllers;
 import com.querydsl.core.types.Predicate;
 import hexlet.code.domain.Task;
 import hexlet.code.domain.User;
-import hexlet.code.dto.TaskDtoInput;
-import hexlet.code.dto.TaskDtoOutput;
+import hexlet.code.dto.TaskRequestDto;
+import hexlet.code.dto.TaskResponseDto;
 import hexlet.code.exceptions.EntityNotFoundException;
 import hexlet.code.repository.TaskRepository;
 import hexlet.code.services.TaskService;
@@ -48,7 +48,7 @@ public class TaskController {
                     content = @Content(schema = @Schema(implementation = User.class))),
             @ApiResponse(responseCode = "404", description = "Task not found")})
     @GetMapping(path = "/{id}")
-    public TaskDtoOutput getTask(@PathVariable long id) {
+    public TaskResponseDto getTask(@PathVariable long id) {
         Task task = taskRepository.findById(id);
 
         if (task == null) {
@@ -63,7 +63,7 @@ public class TaskController {
             @ApiResponse(responseCode = "200", description = "Information retrieved",
                     content = @Content(schema = @Schema(implementation = User.class)))})
     @GetMapping(path = "")
-    public List<TaskDtoOutput> getTasks(@QuerydslPredicate(root = Task.class) Predicate predicate) {
+    public List<TaskResponseDto> getTasks(@QuerydslPredicate(root = Task.class) Predicate predicate) {
         List<Task> tasks = IterableUtils.toList(taskRepository.findAll(predicate));
 
         return tasks.stream().map(x -> taskService.taskToTaskDto(x)).toList();
@@ -75,8 +75,8 @@ public class TaskController {
                     content = @Content(schema = @Schema(implementation = User.class))),
             @ApiResponse(responseCode = "422", description = "Incorrect task data")})
     @PostMapping(path = "")
-    public TaskDtoOutput createTask(@RequestBody @Valid TaskDtoInput taskDtoInput) {
-        Task task = taskService.createTask(taskDtoInput);
+    public TaskResponseDto createTask(@RequestBody @Valid TaskRequestDto taskRequestDto) {
+        Task task = taskService.createTask(taskRequestDto);
 
         return taskService.taskToTaskDto(task);
     }
@@ -87,11 +87,9 @@ public class TaskController {
                     content = @Content(schema = @Schema(implementation = User.class))),
             @ApiResponse(responseCode = "422", description = "Incorrect task data")})
     @PutMapping(path = "/{id}")
-    public TaskDtoOutput updateTask(@PathVariable long id, @RequestBody @Valid TaskDtoInput taskDtoInput) {
-        taskDtoInput.setId(id);
-
-        Task task = taskService.updateTask(taskDtoInput);
-
+    public TaskResponseDto updateTask(@PathVariable long id, @RequestBody @Valid TaskRequestDto taskRequestDto) {
+        taskRequestDto.setId(id);
+        Task task = taskService.updateTask(taskRequestDto);
 
         return taskService.taskToTaskDto(task);
     }

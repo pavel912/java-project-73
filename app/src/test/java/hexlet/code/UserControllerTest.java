@@ -1,6 +1,5 @@
 package hexlet.code;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,13 +17,12 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Map;
+import hexlet.code.utils.TestUtils;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-class UserTests {
+class UserControllerTest {
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -39,62 +37,27 @@ class UserTests {
 				.perform(
 						post("/api/users")
 								.contentType(MediaType.APPLICATION_JSON)
-								.content("{\"firstName\": \"John\","
-										+ " \"lastName\": \"Smith\","
-										+ " \"email\": \"jsmith@mail.ru\","
-										+ " \"password\": \"jsmith\"}")
+								.content(TestUtils.readJsonFromFile(TestUtils.USERS_PATH + "/JohnSmith.json"))
 				)
 				.andReturn()
 				.getResponse();
 
 		assertThat(createResponseJohn.getStatus()).isEqualTo(200);
 
-		firstUserId = Long
-				.parseLong(
-						objectMapper
-								.readValue(
-										createResponseJohn
-												.getContentAsString(),
-										new TypeReference<
-												Map<String, String>
-												>() { }
-								).get("id"));
+		firstUserId = TestUtils.parseIdFromResponse(createResponseJohn.getContentAsString());
 
 		MockHttpServletResponse createResponseJack = mockMvc
 				.perform(
 						post("/api/users")
 								.contentType(MediaType.APPLICATION_JSON)
-								.content("{\"firstName\": \"Jack\","
-										+ " \"lastName\": \"Doe\","
-										+ " \"email\": \"killer@mail.ru\","
-										+ " \"password\": \"qwerty\"}")
+								.content(TestUtils.readJsonFromFile(TestUtils.USERS_PATH + "/JackDoe.json"))
 				)
 				.andReturn()
 				.getResponse();
 
 		assertThat(createResponseJack.getStatus()).isEqualTo(200);
 
-		secondUserId = Long
-				.parseLong(
-						objectMapper
-								.readValue(
-										createResponseJack
-												.getContentAsString(),
-										new TypeReference<
-												Map<String, String>
-												>() { }
-								).get("id"));
-	}
-
-	@Test
-	void testRootPage() throws Exception {
-		MockHttpServletResponse response = mockMvc
-				.perform(get("/welcome"))
-				.andReturn()
-				.getResponse();
-
-		assertThat(response.getStatus()).isEqualTo(200);
-		assertThat(response.getContentAsString()).contains("Welcome to Spring");
+		secondUserId = TestUtils.parseIdFromResponse(createResponseJack.getContentAsString());
 	}
 
 	@Test
@@ -102,8 +65,8 @@ class UserTests {
 		MockHttpServletResponse loginResponse = mockMvc
 				.perform(post("/api/login")
 						.contentType(MediaType.APPLICATION_JSON)
-						.content("{\"username\": \"jsmith@mail.ru\", "
-								+ "\"password\": \"jsmith\"}"))
+						.content(TestUtils.readJsonFromFile(TestUtils.USERS_LOGIN_PATH + "/JohnSmith.json"))
+				)
 				.andReturn()
 				.getResponse();
 
@@ -141,10 +104,7 @@ class UserTests {
 				.perform(
 						post("/api/users")
 								.contentType(MediaType.APPLICATION_JSON)
-								.content("{\"firstName\": \"Jackson\","
-										+ " \"lastName\": \"Bind\","
-										+ " \"email\": \"bind@mail.ru\","
-										+ " \"password\": \"1234\"}")
+								.content(TestUtils.readJsonFromFile(TestUtils.USERS_PATH + "/JacksonBind.json"))
 				)
 				.andReturn()
 				.getResponse();
@@ -166,8 +126,8 @@ class UserTests {
 		MockHttpServletResponse loginResponse = mockMvc
 				.perform(post("/api/login")
 						.contentType(MediaType.APPLICATION_JSON)
-						.content("{\"username\": \"jsmith@mail.ru\", "
-								+ "\"password\": \"jsmith\"}"))
+						.content(TestUtils.readJsonFromFile(TestUtils.USERS_LOGIN_PATH + "/JohnSmith.json"))
+				)
 				.andReturn()
 				.getResponse();
 
@@ -180,10 +140,7 @@ class UserTests {
 						put("/api/users/" + firstUserId)
 								.header(AUTHORIZATION, token)
 								.contentType(MediaType.APPLICATION_JSON)
-								.content("{\"firstName\": \"Mike\","
-										+ " \"lastName\": \"Smith\","
-										+ " \"email\": \"jsmith@mail.ru\","
-										+ " \"password\": \"jsmith\"}")
+								.content(TestUtils.readJsonFromFile(TestUtils.USERS_PATH + "/MikeSmith.json"))
 				)
 				.andReturn()
 				.getResponse();
@@ -206,8 +163,8 @@ class UserTests {
 		MockHttpServletResponse loginResponse = mockMvc
 				.perform(post("/api/login")
 						.contentType(MediaType.APPLICATION_JSON)
-						.content("{\"username\": \"killer@mail.ru\", "
-								+ "\"password\": \"qwerty\"}"))
+						.content(TestUtils.readJsonFromFile(TestUtils.USERS_LOGIN_PATH + "/JackDoe.json"))
+				)
 				.andReturn()
 				.getResponse();
 
@@ -239,10 +196,7 @@ class UserTests {
 				.perform(
 						post("/api/users")
 								.contentType(MediaType.APPLICATION_JSON)
-								.content("{\"firstName\": \"incorrect\","
-										+ " \"lastName\": \"incorrect\","
-										+ " \"email\": \"bind\","
-										+ " \"password\": \"1\"}")
+								.content(TestUtils.readJsonFromFile(TestUtils.USERS_PATH + "/incorrectData.json"))
 				)
 				.andReturn()
 				.getResponse();
@@ -265,10 +219,7 @@ class UserTests {
 				.perform(
 						post("/api/users")
 								.contentType(MediaType.APPLICATION_JSON)
-								.content("{\"firstName\": \"Mike\","
-										+ " \"lastName\": \"Smith\","
-										+ " \"email\": \"jsmith@mail.ru\","
-										+ " \"password\": \"jsmith\"}")
+								.content(TestUtils.readJsonFromFile(TestUtils.USERS_PATH + "/MikeSmith.json"))
 				)
 				.andReturn()
 				.getResponse();
@@ -290,8 +241,8 @@ class UserTests {
 		MockHttpServletResponse loginResponse = mockMvc
 				.perform(post("/api/login")
 						.contentType(MediaType.APPLICATION_JSON)
-						.content("{\"username\": \"jsmith@mail.ru\", "
-								+ "\"password\": \"jsmith\"}"))
+						.content(TestUtils.readJsonFromFile(TestUtils.USERS_LOGIN_PATH + "/JohnSmith.json"))
+				)
 				.andReturn()
 				.getResponse();
 
@@ -299,20 +250,17 @@ class UserTests {
 
 		String token = loginResponse.getContentAsString();
 
-		MockHttpServletResponse postResponse = mockMvc
+		MockHttpServletResponse putResponse = mockMvc
 				.perform(
 						put("/api/users/" + firstUserId)
 								.header(AUTHORIZATION, token)
 								.contentType(MediaType.APPLICATION_JSON)
-								.content("{\"firstName\": \"incorrect\","
-										+ " \"lastName\": \"incorrect\","
-										+ " \"email\": \"bind\","
-										+ " \"password\": \"1\"}")
+								.content(TestUtils.readJsonFromFile(TestUtils.USERS_PATH + "/incorrectData.json"))
 				)
 				.andReturn()
 				.getResponse();
 
-		assertThat(postResponse.getStatus()).isEqualTo(422);
+		assertThat(putResponse.getStatus()).isEqualTo(422);
 
 		MockHttpServletResponse getResponse = mockMvc
 				.perform(get("/api/users"))
@@ -329,8 +277,8 @@ class UserTests {
 		MockHttpServletResponse loginResponse = mockMvc
 				.perform(post("/api/login")
 						.contentType(MediaType.APPLICATION_JSON)
-						.content("{\"username\": \"jsmith@mail.ru\", "
-								+ "\"password\": \"jsmith\"}"))
+						.content(TestUtils.readJsonFromFile(TestUtils.USERS_LOGIN_PATH + "/JohnSmith.json"))
+				)
 				.andReturn()
 				.getResponse();
 
@@ -338,20 +286,17 @@ class UserTests {
 
 		String token = loginResponse.getContentAsString();
 
-		MockHttpServletResponse postResponse = mockMvc
+		MockHttpServletResponse putResponse = mockMvc
 				.perform(
 						put("/api/users/" + secondUserId)
 								.header(AUTHORIZATION, token)
 								.contentType(MediaType.APPLICATION_JSON)
-								.content("{\"firstName\": \"ok\","
-										+ " \"lastName\": \"ok\","
-										+ " \"email\": \"ok@mail.ru\","
-										+ " \"password\": \"1234\"}")
+								.content(TestUtils.readJsonFromFile(TestUtils.USERS_PATH + "/JohnSmith.json"))
 				)
 				.andReturn()
 				.getResponse();
 
-		assertThat(postResponse.getStatus()).isEqualTo(403);
+		assertThat(putResponse.getStatus()).isEqualTo(403);
 	}
 
 	@Test
@@ -359,8 +304,8 @@ class UserTests {
 		MockHttpServletResponse loginResponse = mockMvc
 				.perform(post("/api/login")
 						.contentType(MediaType.APPLICATION_JSON)
-						.content("{\"username\": \"killer@mail.ru\", "
-								+ "\"password\": \"qwerty\"}"))
+						.content(TestUtils.readJsonFromFile(TestUtils.USERS_LOGIN_PATH + "/JackDoe.json"))
+				)
 				.andReturn()
 				.getResponse();
 
@@ -368,20 +313,17 @@ class UserTests {
 
 		String token = loginResponse.getContentAsString();
 
-		MockHttpServletResponse postResponse = mockMvc
+		MockHttpServletResponse putResponse = mockMvc
 				.perform(
 						put("/api/users/" + secondUserId)
 								.header(AUTHORIZATION, token)
 								.contentType(MediaType.APPLICATION_JSON)
-								.content("{\"firstName\": \"Mike\","
-										+ " \"lastName\": \"Smith\","
-										+ " \"email\": \"jsmith@mail.ru\","
-										+ " \"password\": \"jsmith\"}")
+								.content(TestUtils.readJsonFromFile(TestUtils.USERS_PATH + "/MikeSmith.json"))
 				)
 				.andReturn()
 				.getResponse();
 
-		assertThat(postResponse.getStatus()).isEqualTo(422);
+		assertThat(putResponse.getStatus()).isEqualTo(422);
 
 		MockHttpServletResponse getResponse = mockMvc
 				.perform(get("/api/users"))
@@ -398,8 +340,8 @@ class UserTests {
 		MockHttpServletResponse loginResponse = mockMvc
 				.perform(post("/api/login")
 						.contentType(MediaType.APPLICATION_JSON)
-						.content("{\"username\": \"killer@mail.ru\", "
-								+ "\"password\": \"qwerty\"}"))
+						.content(TestUtils.readJsonFromFile(TestUtils.USERS_LOGIN_PATH + "/JackDoe.json"))
+				)
 				.andReturn()
 				.getResponse();
 
