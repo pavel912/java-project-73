@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import lombok.AllArgsConstructor;
 import org.apache.commons.collections4.IterableUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,12 +30,13 @@ import static org.springframework.http.HttpStatus.CREATED;
 
 @RestController
 @RequestMapping(path = "${base-url}" + "/statuses")
+@AllArgsConstructor
 public class TaskStatusController {
     @Autowired
-    TaskStatusRepository taskStatusRepository;
+    private final TaskStatusRepository taskStatusRepository;
 
     @Autowired
-    TaskStatusService taskStatusService;
+    private final TaskStatusService taskStatusService;
 
     @Operation(summary = "Get all task statuses")
     @ApiResponse(responseCode = "200", description = "Information retrieved",

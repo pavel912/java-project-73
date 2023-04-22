@@ -16,7 +16,7 @@ import javax.transaction.Transactional;
 public class TaskStatusServiceImpl implements TaskStatusService {
 
     @Autowired
-    TaskRepository taskRepository;
+    private final TaskRepository taskRepository;
     @Override
     public TaskStatusDto taskStatusToDto(TaskStatus taskStatus) {
         TaskStatusDto taskStatusDto = new TaskStatusDto();

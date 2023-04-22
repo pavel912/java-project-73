@@ -3,8 +3,6 @@ package hexlet.code.configs;
 import hexlet.code.component.JWTHelper;
 import hexlet.code.filters.JWTAuthenticationFilter;
 import hexlet.code.filters.JWTAuthorizationFilter;
-import hexlet.code.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -41,11 +39,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private static final String LABEL_CONTROLLER_PATH = "/labels";
 
-    @Autowired
-    UserRepository userRepository;
-
-    @Autowired
-    UserDetailsService userDetailsService;
+    private final UserDetailsService userDetailsService;
 
     private final RequestMatcher publicUrls;
     private final RequestMatcher loginRequest;

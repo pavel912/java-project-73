@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import lombok.AllArgsConstructor;
 import org.apache.commons.collections4.IterableUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.querydsl.binding.QuerydslPredicate;
@@ -34,12 +35,13 @@ import static org.springframework.http.HttpStatus.CREATED;
 
 @RestController
 @RequestMapping("${base-url}" + "/tasks")
+@AllArgsConstructor
 public class TaskController {
     @Autowired
-    TaskRepository taskRepository;
+    private final TaskRepository taskRepository;
 
     @Autowired
-    TaskService taskService;
+    private final TaskService taskService;
 
     private static final String ONLY_OWNER_BY_ID = """
             @taskRepository.findById(#id).getAuthor().getEmail() == authentication.getName()

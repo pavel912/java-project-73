@@ -23,25 +23,25 @@ import java.util.List;
 @AllArgsConstructor
 public class TaskServiceImpl implements TaskService {
     @Autowired
-    TaskRepository taskRepository;
+    private final TaskRepository taskRepository;
 
     @Autowired
-    UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    TaskStatusRepository taskStatusRepository;
+    private final TaskStatusRepository taskStatusRepository;
 
     @Autowired
-    UserService userService;
+    private final UserService userService;
 
     @Autowired
-    TaskStatusService taskStatusService;
+    private final TaskStatusService taskStatusService;
 
     @Autowired
-    LabelRepository labelRepository;
+    private final LabelRepository labelRepository;
 
     @Autowired
-    LabelService labelService;
+    private final LabelService labelService;
 
     @Override
     public Task createTask(TaskRequestDto taskRequestDto) {

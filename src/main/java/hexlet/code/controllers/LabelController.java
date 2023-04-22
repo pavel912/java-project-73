@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import lombok.AllArgsConstructor;
 import org.apache.commons.collections4.IterableUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -30,12 +31,13 @@ import static org.springframework.http.HttpStatus.CREATED;
 
 @RestController
 @RequestMapping("${base-url}" + "/labels")
+@AllArgsConstructor
 public class LabelController {
     @Autowired
-    LabelRepository labelRepository;
+    private final LabelRepository labelRepository;
 
     @Autowired
-    LabelService labelService;
+    private final LabelService labelService;
 
     @Operation(summary = "Get task label by id")
     @ApiResponses({

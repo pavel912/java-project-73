@@ -16,7 +16,7 @@ import javax.transaction.Transactional;
 public class LabelServiceImpl implements LabelService {
 
     @Autowired
-    TaskRepository taskRepository;
+    private final TaskRepository taskRepository;
 
     @Override
     public LabelDto labelToDto(Label label) {
