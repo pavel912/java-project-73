@@ -75,7 +75,7 @@ class UserControllerTest {
 	void testGetUser() throws Exception {
 		String fileContent = TestUtils
 				.readJsonFromFile(
-				TestUtils.USERS_LOGIN_PATH
+				TestUtils.USERS_PATH
 						+ "/JohnSmith.json");
 
 		MockHttpServletResponse loginResponse = mockMvc
