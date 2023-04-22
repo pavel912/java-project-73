@@ -40,4 +40,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: test0reports
-          path: home/runner/work/java-project-73/java-project-73/build/reports/tests/test/index.html
+          path: home/runner/work/java-project-73/java-project-73/build/reports/tests/test/
