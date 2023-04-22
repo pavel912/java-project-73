@@ -7,4 +7,4 @@ build/
 
 node
 
-src/main/java/hexlet/code/configs/RollbarConfig.java
+# src/main/java/hexlet/code/configs/RollbarConfig.java
