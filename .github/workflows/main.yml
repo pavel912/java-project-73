@@ -28,7 +28,9 @@ jobs:
         with:
           coverageCommand: make report
           coverageLocations: ${{github.workspace}}/build/reports/jacoco/test/jacocoTestReport.xml:jacoco
+
   get-test-results:
+    needs: build
     runs-on: ubuntu-latest
 
     steps:
