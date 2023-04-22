@@ -20,10 +20,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.List;
+
+import static org.springframework.http.HttpStatus.CREATED;
 
 @RestController
 @RequestMapping("${base-url}" + "/labels")
@@ -63,10 +66,11 @@ public class LabelController {
 
     @Operation(summary = "Create label")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Label created",
+            @ApiResponse(responseCode = "201", description = "Label created",
                     content = @Content(schema = @Schema(implementation = User.class))),
             @ApiResponse(responseCode = "422", description = "Incorrect label data")})
     @PostMapping(path = "")
+    @ResponseStatus(CREATED)
     public LabelDto createLabel(@RequestBody @Valid LabelDto labelDto) {
         Label label = new Label();
         label.setName(labelDto.getName());

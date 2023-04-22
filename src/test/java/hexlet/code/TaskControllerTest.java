@@ -64,7 +64,7 @@ public class TaskControllerTest {
                 .andReturn()
                 .getResponse();
 
-        assertThat(createTaskStatusResponse.getStatus()).isEqualTo(200);
+        assertThat(createTaskStatusResponse.getStatus()).isEqualTo(201);
 
         taskStatusId = TestUtils.parseIdFromResponse(createTaskStatusResponse.getContentAsString());
 
@@ -77,7 +77,7 @@ public class TaskControllerTest {
                 .andReturn()
                 .getResponse();
 
-        assertThat(createLabelResponse.getStatus()).isEqualTo(200);
+        assertThat(createLabelResponse.getStatus()).isEqualTo(201);
 
         labelId = TestUtils.parseIdFromResponse(createLabelResponse.getContentAsString());
 
@@ -94,7 +94,7 @@ public class TaskControllerTest {
                 .andReturn()
                 .getResponse();
 
-        assertThat(createTaskStatusResponse.getStatus()).isEqualTo(200);
+        assertThat(createTaskStatusResponse.getStatus()).isEqualTo(201);
 
         taskId = TestUtils.parseIdFromResponse(createTaskResponse.getContentAsString());
     }
@@ -303,7 +303,7 @@ public class TaskControllerTest {
                 .andReturn()
                 .getResponse();
 
-        assertThat(createTaskStatusResponse.getStatus()).isEqualTo(200);
+        assertThat(createTaskStatusResponse.getStatus()).isEqualTo(201);
 
         long newTaskStatusId = TestUtils.parseIdFromResponse(createTaskStatusResponse.getContentAsString());
 

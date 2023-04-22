@@ -57,7 +57,7 @@ public class LabelControllerTest {
                 .andReturn()
                 .getResponse();
 
-        assertThat(createLabelResponse.getStatus()).isEqualTo(200);
+        assertThat(createLabelResponse.getStatus()).isEqualTo(201);
 
         labelId = TestUtils.parseIdFromResponse(createLabelResponse.getContentAsString());
     }

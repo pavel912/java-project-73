@@ -48,7 +48,7 @@ class UserControllerTest {
 				.andReturn()
 				.getResponse();
 
-		assertThat(createResponseJohn.getStatus()).isEqualTo(200);
+		assertThat(createResponseJohn.getStatus()).isEqualTo(201);
 
 		firstUserId = TestUtils.parseIdFromResponse(createResponseJohn.getContentAsString());
 
@@ -66,7 +66,7 @@ class UserControllerTest {
 				.andReturn()
 				.getResponse();
 
-		assertThat(createResponseJack.getStatus()).isEqualTo(200);
+		assertThat(createResponseJack.getStatus()).isEqualTo(201);
 
 		secondUserId = TestUtils.parseIdFromResponse(createResponseJack.getContentAsString());
 	}
@@ -130,7 +130,7 @@ class UserControllerTest {
 				.andReturn()
 				.getResponse();
 
-		assertThat(postResponse.getStatus()).isEqualTo(200);
+		assertThat(postResponse.getStatus()).isEqualTo(201);
 
 		MockHttpServletResponse getResponse = mockMvc
 				.perform(get("/api/users"))

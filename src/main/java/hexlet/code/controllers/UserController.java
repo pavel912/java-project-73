@@ -26,6 +26,8 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.util.List;
 
+import static org.springframework.http.HttpStatus.CREATED;
+
 
 @RestController
 @RequestMapping("${base-url}" + "/users")
@@ -68,10 +70,11 @@ public class UserController {
 
     @Operation(summary = "Create new user")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "User created",
+            @ApiResponse(responseCode = "201", description = "User created",
                     content = @Content(schema = @Schema(implementation = User.class))),
             @ApiResponse(responseCode = "422", description = "Incorrect user data")})
     @PostMapping(path = "")
+    @ResponseStatus(CREATED)
     public UserDto createUser(@RequestBody @Valid final UserDto userDto) throws Exception {
         User user = userService.createUser(userDto);
         return userService.userToUserDto(user);

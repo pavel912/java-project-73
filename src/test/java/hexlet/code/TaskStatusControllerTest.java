@@ -60,7 +60,7 @@ public class TaskStatusControllerTest {
                 .andReturn()
                 .getResponse();
 
-        assertThat(createTaskStatusResponse.getStatus()).isEqualTo(200);
+        assertThat(createTaskStatusResponse.getStatus()).isEqualTo(201);
 
         taskStatusId = TestUtils.parseIdFromResponse(createTaskStatusResponse.getContentAsString());
     }

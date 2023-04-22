@@ -25,6 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.util.List;
 
+import static org.springframework.http.HttpStatus.CREATED;
+
 @RestController
 @RequestMapping(path = "${base-url}" + "/statuses")
 public class TaskStatusController {
@@ -61,9 +63,9 @@ public class TaskStatusController {
     }
 
     @Operation(summary = "Create task status")
-    @ApiResponse(responseCode = "200", description = "Task status created")
-    @ResponseStatus(HttpStatus.OK)
+    @ApiResponse(responseCode = "201", description = "Task status created")
     @PostMapping(path = "")
+    @ResponseStatus(CREATED)
     public TaskStatusDto createTaskStatus(@RequestBody @Valid final TaskStatusDto taskStatusDto) {
         TaskStatus taskStatus = new TaskStatus();
         taskStatus.setName(taskStatusDto.getName());
