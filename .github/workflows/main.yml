@@ -28,8 +28,13 @@ jobs:
         with:
           coverageCommand: make report
           coverageLocations: ${{github.workspace}}/build/reports/jacoco/test/jacocoTestReport.xml:jacoco
-      - name: Upload test results
-        uses: actions/upload-artifact@v3
-        with:
-          name: test0reports
-          path: reports/tests/test/index.html
+  get-test-results:
+    - runs-on: ubuntu-latest
+
+      steps:
+        - uses: actions/checkout@v2
+        - name: Upload test results
+          uses: actions/upload-artifact@v3
+          with:
+            name: test0reports
+            path: reports/tests/test/index.html
