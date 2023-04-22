@@ -23,13 +23,13 @@ const Login = () => {
 
   const f = useFormik({
     initialValues: {
-      username: '',
+      email: '',
       password: '',
     },
     validationSchema: getValidationSchema(),
     onSubmit: async (formData, { setSubmitting, setErrors }) => {
       try {
-        const userData = { username: formData.email, password: formData.password };
+        const userData = { email: formData.email, password: formData.password };
         const { data: token } = await axios.post(routes.apiLogin(), userData);
 
         auth.logIn({ ...formData, token });

@@ -40,7 +40,7 @@ dependencies {
 			'com.querydsl:querydsl-jpa:5.0.0',
 
 			// rollbar
-			'com.rollbar:rollbar-spring-boot3-webmvc:1.+',
+			'com.rollbar:rollbar-spring-boot-webmvc:1.8.1',
 
 			// liquibase
 			'org.liquibase:liquibase-core:4.6.1',
@@ -79,7 +79,7 @@ dependencies {
 }
 
 application {
-	mainClass = 'hexlet.code.TaskManagerApplication'
+	mainClass = 'hexlet.code.AppApplication'
 }
 
 task stage(dependsOn: ['clean', 'installDist'])
