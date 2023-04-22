@@ -6,5 +6,3 @@ build/
 *.db
 
 node
-
-src/main/java/hexlet/code/configs/RollbarConfig.java
