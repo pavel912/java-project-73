@@ -5,6 +5,7 @@ import hexlet.code.exceptions.DuplicateUsernameException;
 import hexlet.code.exceptions.EntityDependOnOthersException;
 import hexlet.code.exceptions.EntityNotFoundException;
 import hexlet.code.exceptions.IncorrectEntityDataException;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -15,10 +16,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 @ResponseBody
+@AllArgsConstructor
 public class ExceptionRestControllerAdvice {
 
     @Autowired
-    Rollbar rollbar;
+    private final Rollbar rollbar;
 
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     @ExceptionHandler(MethodArgumentNotValidException.class)
