@@ -1,8 +1,10 @@
 name: Java CI
 
 on:
-  - push
-  - pull_request
+  push:
+    paths-ignore:
+      - "frontend"
+  pull_request:
 
 jobs:
   build:

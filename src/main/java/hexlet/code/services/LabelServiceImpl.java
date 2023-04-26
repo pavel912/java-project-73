@@ -2,7 +2,7 @@ package hexlet.code.services;
 
 import hexlet.code.domain.Label;
 import hexlet.code.dto.LabelDto;
-import hexlet.code.exceptions.EntityDependOnOthers;
+import hexlet.code.exceptions.EntityDependOnOthersException;
 import hexlet.code.repository.TaskRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +33,7 @@ public class LabelServiceImpl implements LabelService {
     public void checkLabelAssociatedWithTasks(Label label) {
         taskRepository.findAll().forEach(task -> {
             if (!task.getLabels().stream().filter(l -> l.getId() == label.getId()).toList().isEmpty()) {
-                throw new EntityDependOnOthers("Label can be deleted because some tasks are labeled with it");
+                throw new EntityDependOnOthersException("Label can be deleted because some tasks are labeled with it");
             }
         });
     }

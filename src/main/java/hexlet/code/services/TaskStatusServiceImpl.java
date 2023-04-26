@@ -2,7 +2,7 @@ package hexlet.code.services;
 
 import hexlet.code.domain.TaskStatus;
 import hexlet.code.dto.TaskStatusDto;
-import hexlet.code.exceptions.EntityDependOnOthers;
+import hexlet.code.exceptions.EntityDependOnOthersException;
 import hexlet.code.repository.TaskRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +30,7 @@ public class TaskStatusServiceImpl implements TaskStatusService {
     public void checkStatusAssociatedWithTasks(TaskStatus taskStatus) {
         taskRepository.findAll().forEach(task -> {
             if (task.getTaskStatus() == taskStatus) {
-                throw new EntityDependOnOthers("This task status is associated with at least one task");
+                throw new EntityDependOnOthersException("This task status is associated with at least one task");
             }
         });
     }

@@ -1,4 +1,4 @@
-package hexlet.code;
+package hexlet.code.controllers;
 
 import hexlet.code.utils.TestUtils;
 import org.junit.jupiter.api.BeforeEach;

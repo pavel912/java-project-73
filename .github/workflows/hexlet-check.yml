@@ -11,6 +11,8 @@ on:
       - '**'
     tags:
       - '**'
+    paths-ignore:
+      - "frontend"
 
 jobs:
   build:

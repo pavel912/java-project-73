@@ -1,4 +1,6 @@
 package hexlet.code.filters;
+
+
 import java.io.IOException;
 import java.util.Optional;
 import javax.servlet.FilterChain;
@@ -9,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import hexlet.code.component.JWTHelper;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -37,6 +40,7 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
         return publicUrls.matches(request);
     }
 
+    @Bean
     @Override
     protected void doFilterInternal(final HttpServletRequest request,
                                     final HttpServletResponse response,
@@ -57,7 +61,7 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 
             SecurityContextHolder.getContext().setAuthentication(authToken);
         } catch (Exception e) {
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            e.getMessage();
         }
 
         filterChain.doFilter(request, response);

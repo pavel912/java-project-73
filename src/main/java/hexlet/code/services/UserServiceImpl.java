@@ -3,7 +3,7 @@ package hexlet.code.services;
 import hexlet.code.domain.User;
 import hexlet.code.dto.UserDto;
 import hexlet.code.exceptions.DuplicateUsernameException;
-import hexlet.code.exceptions.EntityDependOnOthers;
+import hexlet.code.exceptions.EntityDependOnOthersException;
 import hexlet.code.exceptions.EntityNotFoundException;
 import hexlet.code.repository.TaskRepository;
 import hexlet.code.repository.UserRepository;
@@ -121,7 +121,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public void checkUserAssociatedWithTasks(User user) {
         taskRepository.findAll().forEach(task -> {
             if (task.getAuthor() == user || task.getExecutor() == user) {
-                throw new EntityDependOnOthers("This user is an author or an exutor of at least one task");
+                throw new EntityDependOnOthersException("This user is an author or an exutor of at least one task");
             }
         });
     }
