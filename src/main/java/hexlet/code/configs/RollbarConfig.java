@@ -8,8 +8,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.beans.factory.annotation.Value;
 
-import java.util.Objects;
-
 
 @Configuration
 @ComponentScan({"hexlet.code"})
@@ -17,9 +15,6 @@ public class RollbarConfig {
 
     @Value("${ROLLBAR_TOKEN:}")
     private String rollbarToken;
-
-    @Value("${spring.profiles.active:}")
-    private String activeProfile;
 
     @Bean
     public Rollbar rollbar() {
@@ -31,7 +26,7 @@ public class RollbarConfig {
 
         return RollbarSpringConfigBuilder.withAccessToken(accessToken)
                 .environment("development")
-                .enabled(Objects.equals(activeProfile, "prod"))
+                .enabled(true)
                 .build();
     }
 }

@@ -1,6 +1,9 @@
 base-url: /api
 
 spring:
+  profiles:
+    active:
+      ${APP_ENV}
   datasource:
     url: jdbc:h2:mem:db
     username:

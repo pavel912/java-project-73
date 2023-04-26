@@ -30,16 +30,9 @@ jobs:
         with:
           coverageCommand: make report
           coverageLocations: ${{github.workspace}}/build/reports/jacoco/test/jacocoTestReport.xml:jacoco
-
-  get-test-results:
-    if: ${{ always() }}
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-      - name: Upload test results
+      - name: Get test results
+        if: ${{ always() }}
         uses: actions/upload-artifact@v3
         with:
           name: test0reports
-          path: home/runner/work/java-project-73/java-project-73/build/reports/tests/test/
+          path: ${{github.workspace}}/build/reports/tests/test
